@@ -57,6 +57,12 @@ For OpenAI-only advice, say so. To make DeepSeek eligible, state that Ollama Clo
 
 The OpenRouter Decisions endpoint is alpha. Returned probabilities describe Jev's preference among the supplied choices. They are not success rates. The response identifies Jev's decision model only when OpenRouter returns that field.
 
+## Optional shared RIFF catalog
+
+Standalone use works with the bundled, versioned catalog snapshot. To keep a personal RIFF installation and this skill on the same live policy, explicitly set `RIFF_MODEL_CATALOG` or create `~/.config/jev-openrouter/catalog.json` with `{"catalogPath":"/path/to/riff-codex/riff/references/model-profiles.json"}`. The path is local configuration, not part of this public skill. A configured missing or invalid source fails clearly instead of silently using an old release snapshot.
+
+Inspect the effective source with `python3 <skill-directory>/scripts/model_catalog.py --source`. Read the [catalog loading contract](references/openai-model-advice.md) for precedence and privacy rules. Do not edit the generated snapshot as a separate policy; refresh it from the canonical RIFF catalog when preparing a release. No network fetch or installation happens when reading a catalog.
+
 ## Read next
 
 - [Model guide](MODEL-GUIDE.md)

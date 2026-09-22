@@ -9,7 +9,7 @@ Keep the current Codex model as the working agent. Use Jev only for a bounded st
 
 ## Recommend a primary model
 
-When the user asks Jev which model and reasoning effort to use, read the complete [OpenAI and DeepSeek model grid](references/openai-model-advice.md). This mode returns advice only: do not begin the described task, delegate it, change configuration, or switch the active model.
+When the user asks Jev which model and reasoning effort to use, follow the [shared catalog loading contract](references/openai-model-advice.md), then read the complete JSON returned by `python3 <skill-directory>/scripts/model_catalog.py`. It is the source of profile definitions and selection rules, whether configured from RIFF or loaded from the bundled release snapshot. An explicitly configured missing source is an error, never a silent fallback. This mode returns advice only: do not begin the described task, delegate it, change configuration, or switch the active model.
 
 - Use the supplied task description and collect only constraints that materially affect the choice. Do not explore the project to perform the task while supposedly evaluating it. Ask one focused question only when the missing fact could change the recommendation; otherwise state the assumption.
 - Send Jev the grid, decision rules, and every admissible profile, not just model names. Build one `choice` question named `recommended_profile`. Its `criteria` must map each profile identifier to the complete model, effort, use, and limitation text. Put the task, constraints, unknowns, grid date, and decision rules in `state`. Separately describe reasoning difficulty, dependent steps, desired autonomy, available verification, and the cost of a late error. Jev cannot see the surrounding conversation.

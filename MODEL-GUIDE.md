@@ -18,6 +18,8 @@ There is no automatic switch. After reading the recommendation, you choose the m
 
 ## Model grid
 
+This is a human-readable release summary. For the effective versioned policy, use the [catalog loader](references/openai-model-advice.md); a configured RIFF source can be newer than this published guide. The bundled JSON is a generated snapshot, not a second editable grid.
+
 The grid is a practical policy, not a promise of model performance. High and XHigh are justified by an identified reasoning difficulty, not by importance or duration alone.
 
 | Profile | Best fit | Boundary |

@@ -1,0 +1,42 @@
+{
+  "version": "2026-09-22.1",
+  "status": "Proposed reliability-first policy, not a locally validated performance ranking.",
+  "objective": "Correct end-to-end completion first, minimal avoidable human intervention second, then total consumption and elapsed time including retries. Advice selects a primary model, not a mandatory orchestrator plus worker.",
+  "rules": [
+    "Evaluate reasoning difficulty separately from dependent steps, desired autonomy, automatic error detection and late-error cost. Duration, prompt length and repository size alone do not determine the model.",
+    "Many independent transformations with schema validation may remain Luna work. Ordinary code spanning data, permissions, interface and integration without supervision can justify Astra Medium.",
+    "Prefer OpenAI for ordinary use. Luna handles bounded units; Sol handles well-specified prolonged work; Astra handles dependent autonomous chains and ambiguous diagnosis. These are hypotheses to validate on the actual workflow, not guaranteed win rates.",
+    "High and XHigh require a concrete reasoning difficulty, not a generic reliability premium. Escalate for a bounded problem and return after resolution. Missing tools, permissions or evidence are not fixed by more reasoning.",
+    "Preserve explicit model and destination restrictions. Never infer that a catalog entry proves account access or effective runtime identity. Mark availability unknown unless checked.",
+    "DeepSeek is conditional Ollama Cloud, not local execution or included Codex usage. Require availability, data admissibility and a concrete quota-saving or locally validated benefit. Max benchmarks do not establish Low/High reliability via Ollama.",
+    "Do not equate API prices with subscription quota or claim savings without measured total consumption. Consider context, cache and retries. Choice probabilities are not calibrated success rates.",
+    "Use existing tests, checkpoints and completion evidence. A model change cannot reset formal retry budgets, weaken review gates, authorize delegation or cause automatic provider switching.",
+    "Distinguish faithful extraction from interpretation: exact quotations can be Luna work, while reconciling conflicting sources can require Sol or Astra. Prefer the cheaper plausible profile only when expected reliability remains sufficient.",
+    "Do not research new benchmarks on every consultation. Refresh relevant sources when a model becomes unavailable or current performance is explicitly requested. Jev chooses within this supplied grid; it does not invent missing benchmarks."
+  ],
+  "profiles": [
+    {"id":"luna_low","model":"gpt-5.6-luna","effort":"low","provider":"openai","usage":"Short translation, titles, simple rephrasing, classification, exact extraction or locating a known file. Low ambiguity and easily checked output. No architecture or sensitive judgment."},
+    {"id":"luna_medium","model":"gpt-5.6-luna","effort":"medium","provider":"openai","usage":"Bounded inventory, extraction with several constraints or a small known-cause fix with a clear test. A long document alone does not require a larger model for mechanical work."},
+    {"id":"luna_high","model":"gpt-5.6-luna","effort":"high","provider":"openai","usage":"Substantial but bounded implementation with stable contracts, multistep logic and observable tests. A verifiable unit, not the default owner of a long unsupervised integration chain. No unresolved product, permissions or architecture decisions."},
+    {"id":"luna_xhigh","model":"gpt-5.6-luna","effort":"xhigh","provider":"openai","usage":"Same bounded scope with a concrete reasoning difficulty unresolved at High or otherwise demonstrated. Exceptional, not the default for inventory, extraction or running tests."},
+    {"id":"sol_medium","model":"gpt-5.6-sol","effort":"medium","provider":"openai","usage":"Faithful synthesis, meeting preparation, polished writing, scoped comparative research and ordinary development. First candidate for prolonged well-defined execution with stable contracts and solid automatic validation. Consider Astra Medium when dependencies, context recovery or costly late errors make supervision expensive."},
+    {"id":"sol_high","model":"gpt-5.6-sol","effort":"high","provider":"openai","usage":"Sol-level work with specific intertwined constraints or contradictions that Medium may mishandle. Not an automatic premium for long tasks. For cross-step drift and coordination risk, consider Astra Medium instead of increasing effort by habit."},
+    {"id":"astra_medium","model":"gpt-6-astra","effort":"medium","provider":"openai","usage":"First candidate for prolonged autonomous work with interdependent steps, multiple tools/components, context recovery or costly late errors, even for ordinary code. Also architecture, ambiguous diagnosis, complex planning, strategic judgment and demanding visual acceptance. Can be chosen directly without forcing small-model failures; expected benefit requires local verification."},
+    {"id":"astra_high","model":"gpt-6-astra","effort":"high","provider":"openai","usage":"Precisely identified critical reasoning difficulty unresolved at Medium or clearly justifying deeper analysis. One bounded pass, then return to Medium after resolution."},
+    {"id":"astra_xhigh","model":"gpt-6-astra","effort":"xhigh","provider":"openai","usage":"Exceptional complexity with a documented impasse at High or equivalent concrete justification. Never automatic for a large phase, long document or important request."},
+    {"id":"deepseek_low","model":"deepseek-v4.1-flash:cloud","effort":"low","provider":"ollama","usage":"Conditional Ollama Cloud option for classification, data transformation or drafts from supplied excerpts. Bounded and easy to check, to preserve Codex quota or reproduce a favorable local comparison. Not a systematic Luna replacement or unrestricted repository exploration."},
+    {"id":"deepseek_high","model":"deepseek-v4.1-flash:cloud","effort":"high","provider":"ollama","usage":"Conditional Ollama Cloud option for synthesis of selected excerpts, test proposals or an isolated fix with explicit contract and verification. Requires a quota-saving goal or favorable local evidence. Not the default owner of long interdependent autonomous execution. Max benchmarks do not prove High performance."}
+  ],
+  "sources": [
+    "https://developers.openai.com/api/docs/models",
+    "https://learn.chatgpt.com/docs/pricing",
+    "https://artificialanalysis.ai/models/releases/gpt-5-6-luna",
+    "https://artificialanalysis.ai/models/releases/gpt-5-6-sol",
+    "https://artificialanalysis.ai/articles/benchmarking-gpt-6-astra",
+    "https://metr.org/time-horizons/",
+    "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+    "https://ollama.com/library/deepseek-v4.1-flash",
+    "https://docs.ollama.com/integrations/chatgpt",
+    "https://artificialanalysis.ai/models/deepseek-v4-1-flash"
+  ]
+}
