@@ -1,50 +1,51 @@
 ---
 name: jev-openrouter
-description: Invoke TypeSafe Jev through OpenRouter for an explicitly requested structured judgment, including model and reasoning-effort advice among OpenAI models and conditional DeepSeek via Ollama. Use when the user asks to use Jev or TypeSafe; do not trigger for ordinary model questions, prose or code generation, or implicit routing.
+description: Invoke TypeSafe Jev through OpenRouter for an explicitly requested structured judgment, including model and reasoning-effort advice among OpenAI models and conditional DeepSeek via Ollama. Use only when the user explicitly asks for Jev or TypeSafe; do not trigger for ordinary model questions, prose or code generation, or implicit routing.
 ---
 
 # Invoke Jev through OpenRouter
 
-Keep the current Codex/OpenAI model as the agent. Use Jev only for a bounded structured judgment.
+Keep the current Codex model as the working agent. Use Jev only for a bounded structured judgment. Reply in the user's language.
 
-## Conseiller un modèle principal
+## Recommend a primary model
 
-Quand l'utilisateur demande à Jev quel modèle et quel niveau de réflexion utiliser, lire intégralement [la grille OpenAI et DeepSeek](references/openai-model-advice.md). Ce mode donne un conseil seulement : ne pas commencer la tâche décrite, déléguer, modifier la configuration ou changer le modèle actif.
+When the user asks Jev which model and reasoning effort to use, read the complete [OpenAI and DeepSeek model grid](references/openai-model-advice.md). This mode returns advice only: do not begin the described task, delegate it, change configuration, or switch the active model.
 
-- Utiliser la description fournie ; relever seulement les contraintes nécessaires. Ne pas explorer le projet pour réaliser la tâche sous prétexte de l'évaluer. Si un manque changerait matériellement le choix, poser une question précise ; sinon déclarer l'hypothèse.
-- Transmettre à Jev la grille, ses règles de décision et les options autorisées, pas seulement le nom des modèles. Construire une question `choice` nommée `recommended_profile`, dont `criteria` associe chaque identifiant de profil admissible à sa définition complète. Mettre dans `state` la tâche, les contraintes, les inconnues, les règles de décision et la date de la grille. Inclure séparément la difficulté du raisonnement, les étapes dépendantes, l'autonomie souhaitée, les validations disponibles et le coût d'une erreur tardive. Ces informations constituent le contexte de Jev ; il ne connaît pas cette conversation.
-- Priorité personnelle : résultat correct sur toute l'exécution et interventions humaines minimales ; optimiser ensuite le coût total, reprises et vérification comprises. Une tâche simple mais longue et dépendante n'est pas automatiquement une tâche Luna. Ne pas assimiler XHigh à une garantie de fiabilité. Préserver toute restriction explicite de modèle ; si elle ne laisse qu'un profil, expliquer le choix imposé sans appel Jev superflu. Avec zéro profil admissible, signaler l'incompatibilité, sans inventer un modèle.
-- OpenAI reste le choix par défaut ; DeepSeek est une option conditionnelle selon la section dédiée de la grille. Filtrer les profils avant l'appel : une demande « OpenAI seulement » exclut DeepSeek. Si sa disponibilité ou l'admissibilité des données pour ce cloud est inconnue, conserver le conseil principal OpenAI et présenter DeepSeek comme alternative à vérifier, sans y envoyer de données.
-- Appeler réellement le script pour une demande « utilise Jev ». Un `--dry-run` ou l'avis du modèle principal ne doit jamais être présenté comme une réponse de Jev. Les probabilités retournées ne sont pas une garantie de réussite ni un pourcentage d'économie.
-- Restituer le modèle principal conseillé, son effort, une justification courte fondée sur la grille et un motif concret de réévaluation. Pour une exécution longue, préciser aussi le risque de dérive et le contrôle automatique le plus utile, sans imposer une validation humaine à chaque étape. Distinguer cette justification rédigée par Codex du choix structuré de Jev. Donner le modèle Jev effectivement retourné et le coût s'ils sont disponibles ; ne pas les inventer.
-- Rappeler que le changement dans le sélecteur reste manuel. Pour cette consultation seule, Luna Low est le point de départ économique proposé, pas une obligation ni un changement automatique. Les modèles OpenAI continuent via la souscription Codex ; Jev passe par OpenRouter ; DeepSeek, s'il est ensuite utilisé, passe par Ollama Cloud avec sa consommation distincte. Ne pas le présenter comme local ou inclus dans Codex.
+- Use the supplied task description and collect only constraints that materially affect the choice. Do not explore the project to perform the task while supposedly evaluating it. Ask one focused question only when the missing fact could change the recommendation; otherwise state the assumption.
+- Send Jev the grid, decision rules, and every admissible profile, not just model names. Build one `choice` question named `recommended_profile`. Its `criteria` must map each profile identifier to the complete model, effort, use, and limitation text. Put the task, constraints, unknowns, grid date, and decision rules in `state`. Separately describe reasoning difficulty, dependent steps, desired autonomy, available verification, and the cost of a late error. Jev cannot see the surrounding conversation.
+- Optimize first for a correct end-to-end result, then for fewer avoidable human interventions, then for total cost including retries and verification. A simple but long dependent task is not automatically a Luna task. XHigh is not a reliability guarantee.
+- Preserve explicit model and provider restrictions. Filter profiles before the call. “OpenAI only” excludes DeepSeek. Strictly local data excludes every cloud profile and the Jev call itself. If one profile remains, explain the constrained choice without a redundant paid call. If none remain, report the incompatibility.
+- OpenAI is the default. DeepSeek is conditional under the grid's eligibility rules. If its availability or data destination is uncertain, keep the main recommendation on an allowed OpenAI profile and name DeepSeek only as an alternative to verify. Do not send the uncertain data to it.
+- Make a real script call when the user says to use Jev. Never present `--dry-run`, the working model's opinion, or a fallback as Jev's answer. Returned probabilities describe Jev's choice distribution; they are not success rates or savings percentages.
+- Report the recommended primary model and effort, a short grid-based interpretation, and one concrete reason to reconsider. For a long run, also state the main drift risk and the most useful automated control. Keep Codex's interpretation separate from Jev's structured answer. Report the returned Jev model and cost only when present.
+- Remind the user that changing the Codex model remains manual. Native OpenAI models continue through the user's Codex access. Jev uses OpenRouter. Conditional DeepSeek use goes through Ollama Cloud with separate consumption; do not call it local or included in Codex.
 
-Exemples qui activent ce mode : « Utilise Jev pour choisir le modèle principal pour résumer ce transcript » ; « Demande à Jev quel modèle et quel effort choisir pour diagnostiquer ce bug multi-services ».
+Positive examples: “Use Jev to choose the primary model for summarizing this transcript”; “Ask Jev which model and effort should diagnose this multi-service bug.”
 
-Ne pas l'activer pour « Quel modèle choisir ? » sans demande Jev, ni pour « Résume ce transcript » : répondre normalement dans le premier cas et traiter la tâche dans le second. Une demande d'édition ou d'explication de cette skill ne déclenche pas un appel Jev à elle seule. Les autres décisions structurées Jev gardent le parcours général ci-dessous, sans charger la grille des modèles.
+Near misses: “Which model should I use?” without requesting Jev; “Summarize this transcript”; requests to edit or explain this skill. Handle those normally and do not call Jev.
 
-## Request design
+## Design other decisions
 
-Translate the user's decision into the smallest useful Decisions request:
+Translate any other explicitly requested Jev decision into the smallest useful Decisions request:
 
-- `state`: only the facts Jev needs. Do not send the whole conversation, repository, or vault by default.
+- `state`: only facts needed for the decision. Do not send the whole conversation, repository, or vault.
 - `questions`: one or more independent typed judgments over that state.
 - `choice`: select one option from a criteria object and return probabilities.
 - `noul`: estimate whether a statement is true as a probability from 0 to 1.
 - `score`: locate the state on an ordered rubric with at least two concrete levels.
 
-Keep exact rules, calculations, permissions, and actions in Codex or deterministic code. Jev supplies judgment, not authorization and not generated prose.
+Keep exact rules, calculations, permissions, and actions in Codex or deterministic code. Jev supplies judgment, not authorization or generated prose.
 
 ## Invoke
 
-Build a JSON object with `state` and `questions`, then pass it on stdin or with `--request-file`:
+Resolve this installed skill's directory, then build a JSON object with `state` and `questions` and pass it on standard input or with `--request-file`:
 
 ```bash
-python3 /Users/webstantly/DEV/claude-code-private/skills/dev-tools/jev-openrouter/scripts/jev_decide.py --request-file request.json
+python3 <skill-directory>/scripts/jev_decide.py --request-file request.json
 ```
 
-The script reads `OPENROUTER_API_KEY`, defaults to `~typesafe/jev-latest`, calls `https://openrouter.ai/api/alpha/decisions`, and prints the full JSON response. Use `--dry-run` to validate and inspect the outgoing payload without sending it.
+The script reads `OPENROUTER_API_KEY`, defaults to `~typesafe/jev-latest`, calls `https://openrouter.ai/api/alpha/decisions`, and prints the full JSON response. `--dry-run` validates and prints the outgoing payload without sending it.
 
-Report the selected answer, relevant probabilities or score, the response model, and the reported cost. Keep Codex's interpretation separate from Jev's raw judgment. If the endpoint rejects the request or returns uncertainty that matters, show that result instead of silently substituting another model.
+Report the selected answer, relevant probabilities or score, response model, and reported cost. If the endpoint fails or returns material uncertainty, show that result instead of silently substituting another model.
 
-OpenRouter's Decisions endpoint is alpha. If the contract changes, consult the current [TypeSafe agent documentation](https://docs.typesafe.ai/agent-skill) and [OpenRouter Jev example](https://openrouter.ai/labs/jev/compile) before changing the wrapper.
+The OpenRouter Decisions endpoint is alpha. If its contract changes, consult the current [TypeSafe agent documentation](https://docs.typesafe.ai/agent-skill) and [OpenRouter Jev example](https://openrouter.ai/labs/jev/compile) before changing the wrapper.

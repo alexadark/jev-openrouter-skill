@@ -1,88 +1,86 @@
-# Grille de conseil OpenAI et DeepSeek pour Jev
+# OpenAI and DeepSeek model advice for Jev
 
-Version : 2026-09-22. Politique personnelle proposée à partir de la recherche de cette date, pas benchmark local validé ni classement universel. Périmètre : choix du modèle principal et de son effort pour une tâche code ou non-code. Cette grille ne remplace pas la politique d'exécution RIFF et n'autorise aucun routage automatique.
+Version: 2026-09-22. This is a proposed operating policy based on research available on that date, not a locally validated benchmark or universal ranking. It selects the primary model and reasoning effort for code and non-code work. It does not authorize automatic routing or replace an execution framework's controls.
 
-## Objectif prioritaire et axes séparés
+## Priority and separate decision axes
 
-Alexandra privilégie un résultat correct de bout en bout et le moins d'interventions humaines possible, particulièrement sur les exécutions longues. Le développement courant peut être peu complexe tout en exigeant une bonne continuité. Optimiser le coût total seulement après cette exigence de fiabilité, sans inventer un taux de réussite.
+Prioritize a correct end-to-end result, then fewer avoidable human interventions, especially during long unattended runs. Optimize total cost only after those goals. Do not invent a success rate.
 
-Distinguer dans le contexte envoyé à Jev :
+Describe these axes separately in the state sent to Jev:
 
-- **Difficulté du raisonnement** : transformation connue, interactions à comprendre, ou diagnostic/planning ambigu.
-- **Dépendance des étapes** : lot d'éléments indépendants et vérifiables, ou parcours où une erreur se propage aux étapes suivantes ; reprise après compaction possible.
-- **Autonomie et détectabilité** : travail surveillé ou laissé sans intervention ; tests automatiques et parcours réels disponibles, ou défauts visibles seulement à la fin.
-- **Coût d'une erreur tardive** : correction locale réversible, régression entre composants, incohérence de données ou reprise coûteuse.
+- **Reasoning difficulty:** known transformation, interactions to understand, or ambiguous diagnosis and planning.
+- **Step dependency:** independent verifiable items versus a chain in which an early error propagates; include likely context recovery.
+- **Autonomy and detectability:** supervised or unattended execution; strong automatic tests versus defects visible only at the end.
+- **Late-error cost:** reversible local correction, cross-component regression, data inconsistency, or costly rework.
 
-La durée seule ne décide pas du modèle : 500 transformations indépendantes avec validation de schéma peuvent rester du travail Luna. Une fonctionnalité classique qui enchaîne données, interface, permissions et validation de parcours sans supervision peut justifier Astra même si aucun algorithme n'est difficile.
+Duration alone does not select the model. Five hundred independent schema-validated transformations can remain Luna work. An ordinary feature that connects data, permissions, UI, and journey validation without supervision can justify Astra even when no algorithm is difficult.
 
-## Profils à transmettre dans `criteria`
+## Profiles to send in `criteria`
 
-Chaque ligne définit une option `choice`. Utiliser la colonne Profil comme clé et transmettre ensemble modèle, effort, usage et limites comme valeur. Ne pas envoyer uniquement le nom de l'option. Les clés sont des identifiants internes, pas des noms de modèles API.
+Each row defines one `choice` option. Use Profile as the key and send the model, effort, use, and limitations together as its value. Profile keys are internal identifiers, not model API names.
 
-| Profil | Modèle | Effort | Usage et limites |
+| Profile | Model | Effort | Use and limitations |
 | --- | --- | --- | --- |
-| luna_low | gpt-5.6-luna | low | Traduction courte, titres, reformulation simple, classement, extraction exacte ou recherche ciblée d'un fichier connu. Faible ambiguïté et résultat facile à vérifier. Pas de choix architectural ni de décision sensible. |
-| luna_medium | gpt-5.6-luna | medium | Inventaire délimité, extraction avec plusieurs contraintes, petit correctif à cause connue et test clair. Un long texte n'impose pas un grand modèle si le travail reste mécanique. |
-| luna_high | gpt-5.6-luna | high | Implémentation bornée substantielle, contrats stabilisés, logique à plusieurs étapes et tests observables. Adapté à une unité vérifiable, pas choix par défaut pour porter seul une longue chaîne d'intégration sans supervision. Pas d'arbitrages produit, de permissions ou d'architecture encore ouverts. |
-| luna_xhigh | gpt-5.6-luna | xhigh | Même périmètre borné, avec difficulté de raisonnement concrète non résolue à High ou explicitement démontrée. Exception, pas réglage par défaut pour extraction, inventaire ou tests. |
-| sol_medium | gpt-5.6-sol | medium | Synthèse fidèle, préparation de réunion, rédaction soignée, recherche comparative cadrée ou développement courant. Premier candidat pour une exécution prolongée bien balisée avec contrats stables, étapes délimitées et validations automatiques solides. Préférer Astra Medium si les dépendances, la reprise de contexte ou les erreurs tardives rendent la supervision coûteuse. |
-| sol_high | gpt-5.6-sol | high | Travail de niveau Sol avec contraintes imbriquées ou contradictions précises que Medium risque de mal résoudre. Pas une prime de fiabilité automatique pour toute tâche longue. Si le risque est surtout la dérive entre étapes ou la coordination transversale, considérer Astra Medium plutôt que monter l'effort par habitude. |
-| astra_medium | gpt-6-astra | medium | Premier candidat pour une longue exécution autonome avec étapes interdépendantes, plusieurs outils/composants, reprises de contexte ou erreurs tardives coûteuses, même si le code est ordinaire. Aussi architecture, diagnostic ambigu, planning complexe, décision stratégique et acceptation visuelle exigeante. Peut être choisi directement ; ne pas imposer des échecs sur un petit modèle. Avantage attendu à tester sur le workflow réel, pas garantie d'absence d'erreurs. |
-| astra_high | gpt-6-astra | high | Difficulté critique précisément identifiée, non résolue à Medium ou justifiant clairement une analyse plus profonde. Une seule passe bornée, puis retour à Medium après résolution. |
-| astra_xhigh | gpt-6-astra | xhigh | Complexité exceptionnelle avec impasse documentée à High ou justification équivalente. Pas de choix automatique pour une grande phase, un long document ou une demande dite importante. |
-| deepseek_low | deepseek-v4.1-flash:cloud | low | Option conditionnelle via Ollama Cloud : classement, transformation de données ou brouillon à partir d'extraits fournis, travail borné et facilement vérifiable. À considérer pour préserver le quota Codex ou si une comparaison locale montre un bénéfice. Pas un remplacement systématique de Luna, ni une exploration libre du projet. |
-| deepseek_high | deepseek-v4.1-flash:cloud | high | Option conditionnelle via Ollama Cloud : synthèse d'extraits sélectionnés, proposition de tests ou correctif isolé avec contrat et validation clairs. À considérer pour préserver le quota Codex ou sur preuve locale favorable. Pas choix principal par défaut pour une longue exécution autonome interdépendante. Les benchmarks Max ne prouvent pas les performances de ce profil High. |
+| luna_low | gpt-5.6-luna | low | Short translation, titles, simple rewriting, classification, exact extraction, or a targeted lookup of a known file. Low ambiguity and easy verification. No architecture or sensitive judgment. |
+| luna_medium | gpt-5.6-luna | medium | Bounded inventory, extraction with several constraints, or a small fix with a known cause and clear test. A long input does not require a larger model when the work remains mechanical. |
+| luna_high | gpt-5.6-luna | high | Substantial bounded implementation with stable contracts, multi-step logic, and observable tests. Suitable for a verifiable unit, not the default owner of a long unattended integration chain. No open product, permission, or architecture decisions. |
+| luna_xhigh | gpt-5.6-luna | xhigh | The same bounded scope with a concrete reasoning difficulty unresolved at High or equivalently demonstrated. An exception, not the default for extraction, inventories, or testing. |
+| sol_medium | gpt-5.6-sol | medium | Faithful synthesis, meeting preparation, polished writing, bounded comparative research, or routine development. First candidate for prolonged, well-specified work with stable contracts, bounded steps, and strong automatic checks. Prefer Astra Medium when dependencies, context recovery, or late errors make supervision expensive. |
+| sol_high | gpt-5.6-sol | high | Sol-level work with nested constraints or a specific contradiction Medium may mishandle. Not an automatic reliability premium for every long task. When the main risk is cross-step drift or coordination, consider Astra Medium instead. |
+| astra_medium | gpt-6-astra | medium | First candidate for a long autonomous run with dependent steps, several tools or components, context recovery, or costly late errors, even when the code is ordinary. Also architecture, ambiguous diagnosis, complex planning, strategy, and demanding visual acceptance. It may be selected directly; do not require a smaller model to fail first. Expected benefit must be tested in the real workflow. |
+| astra_high | gpt-6-astra | high | A precisely identified critical difficulty unresolved at Medium or otherwise clearly deserving deeper analysis. One bounded pass, then return to Medium. |
+| astra_xhigh | gpt-6-astra | xhigh | Exceptional complexity with a documented impasse at High or equivalent justification. Not automatic for a large phase, long document, or important request. |
+| deepseek_low | deepseek-v4.1-flash:cloud | low | Conditional Ollama Cloud option for classification, data transformation, or drafting from supplied excerpts when work is bounded and easy to verify. Consider to preserve Codex quota or after a favorable local comparison. Not a systematic Luna replacement or an invitation to explore a repository freely. |
+| deepseek_high | deepseek-v4.1-flash:cloud | high | Conditional Ollama Cloud option for selected-source synthesis, test proposals, or an isolated fix with an explicit contract and verifier. Consider to preserve Codex quota or after favorable local evidence. Not the default for a long dependent autonomous run. Max benchmarks do not establish this High profile's performance. |
 
-Terra, GLM, les autres modèles, Fast, Max et Ultra sont hors de cette grille initiale. C'est une restriction de périmètre, pas une affirmation d'infériorité. Si l'utilisateur demande explicitement une comparaison hors de cette liste, expliquer la limite et rechercher les éléments nécessaires avant de l'élargir ; ne pas substituer silencieusement un profil.
+Terra, GLM, other models, Fast, Max, and Ultra are outside this initial grid. That is a scope restriction, not a claim of inferiority. Research before expanding the grid; never substitute an unlisted profile silently.
 
-## Admissibilité de DeepSeek et choix par défaut
+## DeepSeek eligibility and default choice
 
-OpenAI reste le premier choix pour minimiser les changements de fournisseur et le besoin de supervision : Luna pour les unités bornées, Sol pour le travail courant balisé, Astra pour les longues chaînes interdépendantes et les diagnostics difficiles. DeepSeek élargit les options ; il ne constitue pas un repli automatique lorsque le quota OpenAI manque.
+OpenAI remains the default to minimize provider changes and supervision: Luna for bounded units, Sol for well-specified routine work, and Astra for dependent long runs and difficult diagnosis. DeepSeek expands the options; it is not an automatic fallback when OpenAI quota is low.
 
-Avant d'inclure ses profils dans `criteria`, vérifier les restrictions de la demande, la disponibilité de `deepseek-v4.1-flash:cloud` via Ollama et l'admissibilité des données au regard des restrictions de destination. Une demande « OpenAI seulement » ou « données strictement locales » exclut DeepSeek Cloud. Une contrainte strictement locale exclut aussi les profils OpenAI cloud : aucun profil de cette grille n'est alors admissible, et aucun appel Jev ne doit exporter ces données. Un conseil ne vaut pas autorisation de transmettre ensuite le dépôt, le vault ou l'historique à ce fournisseur. En cas d'inconnue matérielle propre à DeepSeek, conserver OpenAI comme conseil principal s'il reste autorisé et nommer la vérification manquante pour envisager DeepSeek.
+Before including DeepSeek, check the request's provider restrictions, current availability of `deepseek-v4.1-flash:cloud` through Ollama, and whether the data may go to that cloud. “OpenAI only” excludes it. “Strictly local data” excludes every cloud profile and the Jev call itself. Advice does not authorize later transmission of a repository, vault, or history.
 
-Le catalogue local consulté le 22 septembre 2026 expose pour ce slug `none`, `low`, `high`, `max`, mais pas `medium` ni `xhigh`. La grille retient seulement Low et High ; vérifier la correspondance actuelle dans le runtime avant de promettre son application. Une entrée de catalogue ne prouve ni la réussite du travail ni la disponibilité du compte.
+The local catalogue inspected on 2026-09-22 exposed `none`, `low`, `high`, and `max` for this slug, but not `medium` or `xhigh`. This grid keeps Low and High only. A catalogue entry proves neither task performance nor account availability.
 
-DeepSeek peut devenir le conseil principal d'une tâche admissible si celle-ci est bornée et qu'un bénéfice concret est recherché : préserver le quota Codex, ou reproduire un résultat local favorable à qualité équivalente. Sans ce bénéfice, préférer les profils OpenAI. Ne pas conclure d'un faible tarif API que DeepSeek est moins coûteux pour une personne disposant déjà d'une souscription Codex ; tenir compte du plan Ollama, de la consommation réelle et des reprises. Une performance médiocre sur un essai ne prouve pas non plus une infériorité universelle.
+DeepSeek may be the primary recommendation for an eligible bounded task when there is a concrete objective such as preserving Codex quota or reproducing a favorable local result at equal quality. Otherwise prefer OpenAI. Do not turn low API pricing into a savings claim for someone who already has Codex access; include Ollama consumption and retries.
 
-## Règles de décision à transmettre dans `state`
+## Decision rules to include in `state`
 
-- Priorité : correction de bout en bout, puis interventions humaines évitables minimales, puis coût et durée totaux. Ne pas gagner quelques tokens si cela augmente plausiblement les régressions ou le besoin de supervision. Une approbation nécessaire ou un vrai blocage d'accès n'est pas une intervention évitable.
-- Évaluer la nature du travail, l'ambiguïté, le nombre de systèmes liés, le coût d'une erreur, la possibilité de vérifier et les échecs déjà constatés. La longueur du prompt ou la taille d'un dépôt ne suffisent pas à classer la complexité.
-- Distinguer transformation fidèle et synthèse interprétative : extraire des citations exactes peut relever de Luna ; relier des sources contradictoires ou construire un raisonnement relève plutôt de Sol ou Astra.
-- Les outils, permissions et sources manquantes ne sont pas réparés par davantage de réflexion. Signaler ces limites au lieu de recommander automatiquement un modèle supérieur.
-- Ne pas confondre budget de réflexion et endurance : High/XHigh n'est proposé que pour une difficulté de raisonnement identifiée. Pour une longue exécution, le maintien de l'état, la détection d'erreurs et les critères d'achèvement comptent aussi. Recommander les contrôles existants adaptés : étapes bornées, tests de parcours, checkpoint de décisions et blocages, reprise fondée sur les preuves. Ne pas installer un orchestrateur, multiplier les sous-agents ou ajouter des validations humaines pendant ce conseil.
-- Pour une tâche simple, ne pas recommander Astra comme orchestrateur plus un worker : ce surcoût peut annuler l'économie. Le profil choisi est celui qui réalise la tâche, pas un plan de délégation.
-- Un grand contexte peut coûter cher même avec peu de raisonnement. Réduire les lectures inutiles et distinguer entrée, cache et sortie. Ne pas confondre tarif API, crédits et quota de souscription Codex ; un changement de modèle peut aussi affecter le cache.
-- Respecter le modèle explicitement imposé et les capacités actuellement connues du runtime. Si la disponibilité n'a pas été vérifiée, présenter le conseil comme conditionnel, pas comme une option déjà testée dans le sélecteur ou en sous-agent.
-- Si plusieurs profils sont plausibles, préférer le moins coûteux seulement si la fiabilité attendue reste suffisante. Ne pas interpréter une probabilité de choix Jev comme un taux de réussite calibré. Signaler l'incertitude matérielle et l'hypothèse qui ferait changer le choix.
+- Rank end-to-end correctness first, avoidable human intervention second, and total cost and duration third. Necessary approvals and real access blockers are not avoidable interventions.
+- Consider work type, ambiguity, connected systems, error cost, available verification, and observed failures. Prompt length and repository size are insufficient classifiers.
+- Separate faithful transformation from interpretive synthesis. Exact quotation extraction can be Luna; reconciling contradictory sources is more likely Sol or Astra.
+- More reasoning does not repair missing tools, permissions, or sources. Report them.
+- Do not confuse reasoning budget with endurance. High and XHigh require an identified reasoning difficulty. Long execution also depends on durable state, error detection, bounded steps, journey tests, and evidence-based recovery.
+- Select the profile that performs the task, not an expensive orchestrator plus worker for a simple request.
+- Minimize irrelevant context. Do not confuse API pricing, credits, and subscription quota.
+- Honor explicit model constraints and current runtime capabilities. Unknown availability makes a recommendation conditional.
+- When several profiles fit, choose the cheaper one only when expected reliability remains sufficient. Jev probabilities are not calibrated success rates.
 
-## Repères de validation
+## Validation examples
 
-- Trois titres à partir d'un paragraphe fourni : candidat `luna_low` ; pas de recherche, pas de délégation.
-- Transformer des données connues avec schéma explicite et tests : candidat `luna_medium` ou `luna_high` selon la logique.
-- Synthétiser un transcript avec sélection et hiérarchisation des idées : candidat `sol_medium` ; ne pas déduire Astra de la seule longueur.
-- Diagnostiquer une incohérence entre authentification, facturation et base de données, avec cause inconnue : candidat `astra_medium` ; pas de migration ou modification pendant le conseil.
-- Développer plusieurs écrans CRUD avec contrats et tests stables, sans décisions ouvertes : candidat `sol_medium`, plutôt que Luna uniquement parce que chaque écran est simple.
-- Livrer une fonctionnalité classique de bout en bout pendant une longue session sans supervision, entre données, permissions, UI et intégration, avec risques de régression tardive : candidat `astra_medium`, sans monter automatiquement à XHigh.
-- Classer un lot d'extraits publics en catégories vérifiables en préservant le quota Codex, avec Ollama Cloud disponible : `deepseek_low` est admissible, à comparer à Luna.
-- Proposer des tests d'une fonction isolée à partir d'un contrat public, avec la même priorité de quota : `deepseek_high` est admissible. « OpenAI seulement » ou une contrainte de données strictement locales doit exclure ces deux profils Cloud avant l'appel Jev.
+- Three titles from one supplied paragraph: `luna_low` candidate.
+- Transform known data under an explicit schema and tests: `luna_medium` or `luna_high` depending on logic.
+- Synthesize a transcript while selecting and prioritizing ideas: `sol_medium` candidate.
+- Diagnose an unknown inconsistency across authentication, billing, and database: `astra_medium` candidate.
+- Build several CRUD screens with stable contracts and tests: `sol_medium` candidate.
+- Deliver one ordinary feature across data, permissions, UI, and integration during a long unattended run: `astra_medium` candidate.
+- Classify public excerpts while preserving Codex quota and with Ollama Cloud allowed: `deepseek_low` is eligible.
+- Propose tests for an isolated public function under the same quota goal: `deepseek_high` is eligible. OpenAI-only or strictly local restrictions exclude it before the Jev call.
 
-Ces repères évaluent la cohérence du conseil, pas une réponse obligatoire indépendamment des contraintes de la tâche.
+These examples check policy coherence; they are not mandatory answers regardless of task constraints.
 
-## Sources et actualisation
+## Sources and refresh policy
 
-Les capacités et niveaux sont à distinguer de la politique de choix ci-dessus. Sources consultées lors de la recherche du 22 septembre 2026 :
+Sources consulted on 2026-09-22:
 
-- [OpenAI, catalogue des modèles](https://developers.openai.com/api/docs/models) et [Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) : identifiants et capacités. Le catalogue réel de l'application peut différer de l'API.
-- [Artificial Analysis, efforts Luna](https://artificialanalysis.ai/models/releases/gpt-5-6-luna), [Sol](https://artificialanalysis.ai/models/releases/gpt-5-6-sol) et [Astra](https://artificialanalysis.ai/models/releases/gpt-6-astra) : compromis qualité/coût selon l'effort ; les valeurs dépendent du benchmark et de sa version.
-- [Artificial Analysis, analyse Astra](https://artificialanalysis.ai/articles/benchmarking-gpt-6-astra) : gains agentiques, efficacité en tokens et limites selon le type de livrable.
-- [Codex, tarification](https://learn.chatgpt.com/docs/pricing) : consommation dépendant du modèle, du contexte, des outils et du cache, pas seulement du nombre de messages.
-- [METR, task-completion time horizons](https://metr.org/time-horizons/) : distingue fiabilité à 50 % et 80 %, et travail dépendant versus lots indépendants. L'horizon correspond au temps humain estimé, pas au nombre d'heures qu'un agent peut tourner. Cette page, mise à jour en mai 2026 lors de la consultation, ne départage pas directement Astra, Sol et Luna.
-- [Anthropic, effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) : travail incrémental, état durable et tests pour limiter pertes de contexte et achèvement prématuré. Retour d'ingénierie sur Claude, pas preuve comparative sur les modèles OpenAI.
-- [Ollama, DeepSeek V4.1 Flash](https://ollama.com/library/deepseek-v4.1-flash) et [intégration Desktop](https://docs.ollama.com/integrations/chatgpt) : slug Cloud et séparation des requêtes Ollama des requêtes aux modèles natifs OpenAI.
-- [Artificial Analysis, DeepSeek V4.1 Flash Max](https://artificialanalysis.ai/models/deepseek-v4-1-flash) : résultats indépendants encourageants mais sortie très volumineuse dans ce benchmark. Ni les mesures Max ni les vitesses chez un fournisseur ne valident la fiabilité de Low/High via Ollama dans RIFF.
+- [OpenAI model catalogue](https://developers.openai.com/api/docs/models) and [Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) for identifiers and capabilities. The Codex app catalogue may differ from the API.
+- [Artificial Analysis on Luna](https://artificialanalysis.ai/models/releases/gpt-5-6-luna), [Sol](https://artificialanalysis.ai/models/releases/gpt-5-6-sol), and [Astra](https://artificialanalysis.ai/models/releases/gpt-6-astra) for effort tradeoffs; results depend on benchmark version.
+- [Artificial Analysis on Astra](https://artificialanalysis.ai/articles/benchmarking-gpt-6-astra) for agentic strengths and limitations.
+- [Codex pricing](https://learn.chatgpt.com/docs/pricing) for consumption factors beyond message count.
+- [METR task-completion time horizons](https://metr.org/time-horizons/) for dependent work and reliability distinctions; it does not directly rank these models.
+- [Anthropic on long-running agent harnesses](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) for incremental work, durable state, and tests; it is not comparative OpenAI evidence.
+- [Ollama DeepSeek V4.1 Flash](https://ollama.com/library/deepseek-v4.1-flash) and [desktop integration](https://docs.ollama.com/integrations/chatgpt) for the cloud slug and provider separation.
+- [Artificial Analysis DeepSeek V4.1 Flash Max](https://artificialanalysis.ai/models/deepseek-v4-1-flash) for encouraging independent results and high output volume. Max and provider-specific speed do not validate Low or High through Ollama in this workflow.
 
-Les évaluations agentiques d'Artificial Analysis motivent l'essai d'Astra sur les chaînes longues, mais leurs résultats et efforts ne prouvent pas qu'Astra Medium bat Sol High dans RIFF. Pour valider ce choix, comparer sur les mêmes tâches et le même cadre : réussite complète, défauts/régressions détectés, interventions humaines évitables, temps humain de reprise et consommation totale. Distinguer les problèmes du modèle de ceux du contexte, des outils et des tests. Ne pas lancer ce benchmark ou changer RIFF pendant une simple consultation Jev.
-
-Ne pas refaire une recherche complète à chaque conseil. Si la demande porte sur les performances actuelles, un nouveau modèle, ou si un profil devient indisponible, vérifier les sources concernées et signaler les limites de cette grille datée. Jev n'est pas chargé de rechercher ou d'inventer les benchmarks manquants.
+Do not redo the complete research for every recommendation. Refresh relevant sources when the request is about current performance, a new model, or an unavailable profile. Jev must not invent missing benchmarks.
