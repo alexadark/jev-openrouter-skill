@@ -1,6 +1,6 @@
 ---
 name: jev-openrouter
-description: Invoke TypeSafe Jev through OpenRouter for an explicitly requested structured judgment, including advice on an OpenAI model and reasoning effort for a described task. Use when the user asks to use Jev or TypeSafe; do not trigger for ordinary model questions, prose or code generation, or implicit routing.
+description: Invoke TypeSafe Jev through OpenRouter for an explicitly requested structured judgment, including model and reasoning-effort advice among OpenAI models and conditional DeepSeek via Ollama. Use when the user asks to use Jev or TypeSafe; do not trigger for ordinary model questions, prose or code generation, or implicit routing.
 ---
 
 # Invoke Jev through OpenRouter
@@ -9,14 +9,15 @@ Keep the current Codex/OpenAI model as the agent. Use Jev only for a bounded str
 
 ## Conseiller un modèle principal
 
-Quand l'utilisateur demande à Jev quel modèle et quel niveau de réflexion utiliser, lire intégralement [la grille OpenAI](references/openai-model-advice.md). Ce mode donne un conseil seulement : ne pas commencer la tâche décrite, déléguer, modifier la configuration ou changer le modèle actif.
+Quand l'utilisateur demande à Jev quel modèle et quel niveau de réflexion utiliser, lire intégralement [la grille OpenAI et DeepSeek](references/openai-model-advice.md). Ce mode donne un conseil seulement : ne pas commencer la tâche décrite, déléguer, modifier la configuration ou changer le modèle actif.
 
 - Utiliser la description fournie ; relever seulement les contraintes nécessaires. Ne pas explorer le projet pour réaliser la tâche sous prétexte de l'évaluer. Si un manque changerait matériellement le choix, poser une question précise ; sinon déclarer l'hypothèse.
 - Transmettre à Jev la grille, ses règles de décision et les options autorisées, pas seulement le nom des modèles. Construire une question `choice` nommée `recommended_profile`, dont `criteria` associe chaque identifiant de profil admissible à sa définition complète. Mettre dans `state` la tâche, les contraintes, les inconnues, les règles de décision et la date de la grille. Inclure séparément la difficulté du raisonnement, les étapes dépendantes, l'autonomie souhaitée, les validations disponibles et le coût d'une erreur tardive. Ces informations constituent le contexte de Jev ; il ne connaît pas cette conversation.
 - Priorité personnelle : résultat correct sur toute l'exécution et interventions humaines minimales ; optimiser ensuite le coût total, reprises et vérification comprises. Une tâche simple mais longue et dépendante n'est pas automatiquement une tâche Luna. Ne pas assimiler XHigh à une garantie de fiabilité. Préserver toute restriction explicite de modèle ; si elle ne laisse qu'un profil, expliquer le choix imposé sans appel Jev superflu. Avec zéro profil admissible, signaler l'incompatibilité, sans inventer un modèle.
+- OpenAI reste le choix par défaut ; DeepSeek est une option conditionnelle selon la section dédiée de la grille. Filtrer les profils avant l'appel : une demande « OpenAI seulement » exclut DeepSeek. Si sa disponibilité ou l'admissibilité des données pour ce cloud est inconnue, conserver le conseil principal OpenAI et présenter DeepSeek comme alternative à vérifier, sans y envoyer de données.
 - Appeler réellement le script pour une demande « utilise Jev ». Un `--dry-run` ou l'avis du modèle principal ne doit jamais être présenté comme une réponse de Jev. Les probabilités retournées ne sont pas une garantie de réussite ni un pourcentage d'économie.
 - Restituer le modèle principal conseillé, son effort, une justification courte fondée sur la grille et un motif concret de réévaluation. Pour une exécution longue, préciser aussi le risque de dérive et le contrôle automatique le plus utile, sans imposer une validation humaine à chaque étape. Distinguer cette justification rédigée par Codex du choix structuré de Jev. Donner le modèle Jev effectivement retourné et le coût s'ils sont disponibles ; ne pas les inventer.
-- Rappeler que le changement dans le sélecteur reste manuel. Pour cette consultation seule, Luna Low est le point de départ économique proposé, pas une obligation ni un changement automatique. Les modèles OpenAI continuent via la souscription Codex ; seul l'appel Jev passe par OpenRouter.
+- Rappeler que le changement dans le sélecteur reste manuel. Pour cette consultation seule, Luna Low est le point de départ économique proposé, pas une obligation ni un changement automatique. Les modèles OpenAI continuent via la souscription Codex ; Jev passe par OpenRouter ; DeepSeek, s'il est ensuite utilisé, passe par Ollama Cloud avec sa consommation distincte. Ne pas le présenter comme local ou inclus dans Codex.
 
 Exemples qui activent ce mode : « Utilise Jev pour choisir le modèle principal pour résumer ce transcript » ; « Demande à Jev quel modèle et quel effort choisir pour diagnostiquer ce bug multi-services ».
 

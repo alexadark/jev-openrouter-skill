@@ -1,4 +1,4 @@
 interface:
   display_name: "Jev via OpenRouter"
-  short_description: "Décisions Jev et conseil de modèle OpenAI"
-  default_prompt: "Utilise $jev-openrouter pour conseiller un modèle OpenAI et son niveau de réflexion pour cette tâche, sans la commencer."
+  short_description: "Conseil Jev : OpenAI et option DeepSeek via Ollama"
+  default_prompt: "Utilise $jev-openrouter pour conseiller un modèle et son niveau de réflexion selon la grille OpenAI et DeepSeek via Ollama, sans commencer la tâche."

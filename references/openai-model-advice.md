@@ -1,4 +1,4 @@
-# Grille de conseil OpenAI pour Jev
+# Grille de conseil OpenAI et DeepSeek pour Jev
 
 Version : 2026-09-22. Politique personnelle proposée à partir de la recherche de cette date, pas benchmark local validé ni classement universel. Périmètre : choix du modèle principal et de son effort pour une tâche code ou non-code. Cette grille ne remplace pas la politique d'exécution RIFF et n'autorise aucun routage automatique.
 
@@ -30,8 +30,20 @@ Chaque ligne définit une option `choice`. Utiliser la colonne Profil comme clé
 | astra_medium | gpt-6-astra | medium | Premier candidat pour une longue exécution autonome avec étapes interdépendantes, plusieurs outils/composants, reprises de contexte ou erreurs tardives coûteuses, même si le code est ordinaire. Aussi architecture, diagnostic ambigu, planning complexe, décision stratégique et acceptation visuelle exigeante. Peut être choisi directement ; ne pas imposer des échecs sur un petit modèle. Avantage attendu à tester sur le workflow réel, pas garantie d'absence d'erreurs. |
 | astra_high | gpt-6-astra | high | Difficulté critique précisément identifiée, non résolue à Medium ou justifiant clairement une analyse plus profonde. Une seule passe bornée, puis retour à Medium après résolution. |
 | astra_xhigh | gpt-6-astra | xhigh | Complexité exceptionnelle avec impasse documentée à High ou justification équivalente. Pas de choix automatique pour une grande phase, un long document ou une demande dite importante. |
+| deepseek_low | deepseek-v4.1-flash:cloud | low | Option conditionnelle via Ollama Cloud : classement, transformation de données ou brouillon à partir d'extraits fournis, travail borné et facilement vérifiable. À considérer pour préserver le quota Codex ou si une comparaison locale montre un bénéfice. Pas un remplacement systématique de Luna, ni une exploration libre du projet. |
+| deepseek_high | deepseek-v4.1-flash:cloud | high | Option conditionnelle via Ollama Cloud : synthèse d'extraits sélectionnés, proposition de tests ou correctif isolé avec contrat et validation clairs. À considérer pour préserver le quota Codex ou sur preuve locale favorable. Pas choix principal par défaut pour une longue exécution autonome interdépendante. Les benchmarks Max ne prouvent pas les performances de ce profil High. |
 
-Terra, GLM, DeepSeek, les autres modèles, Fast, Max et Ultra sont hors de cette grille initiale. C'est une restriction de périmètre, pas une affirmation d'infériorité. Si l'utilisateur demande explicitement une comparaison hors de cette liste, expliquer la limite et rechercher les éléments nécessaires avant de l'élargir ; ne pas substituer silencieusement un profil.
+Terra, GLM, les autres modèles, Fast, Max et Ultra sont hors de cette grille initiale. C'est une restriction de périmètre, pas une affirmation d'infériorité. Si l'utilisateur demande explicitement une comparaison hors de cette liste, expliquer la limite et rechercher les éléments nécessaires avant de l'élargir ; ne pas substituer silencieusement un profil.
+
+## Admissibilité de DeepSeek et choix par défaut
+
+OpenAI reste le premier choix pour minimiser les changements de fournisseur et le besoin de supervision : Luna pour les unités bornées, Sol pour le travail courant balisé, Astra pour les longues chaînes interdépendantes et les diagnostics difficiles. DeepSeek élargit les options ; il ne constitue pas un repli automatique lorsque le quota OpenAI manque.
+
+Avant d'inclure ses profils dans `criteria`, vérifier les restrictions de la demande, la disponibilité de `deepseek-v4.1-flash:cloud` via Ollama et l'admissibilité des données au regard des restrictions de destination. Une demande « OpenAI seulement » ou « données strictement locales » exclut DeepSeek Cloud. Une contrainte strictement locale exclut aussi les profils OpenAI cloud : aucun profil de cette grille n'est alors admissible, et aucun appel Jev ne doit exporter ces données. Un conseil ne vaut pas autorisation de transmettre ensuite le dépôt, le vault ou l'historique à ce fournisseur. En cas d'inconnue matérielle propre à DeepSeek, conserver OpenAI comme conseil principal s'il reste autorisé et nommer la vérification manquante pour envisager DeepSeek.
+
+Le catalogue local consulté le 22 septembre 2026 expose pour ce slug `none`, `low`, `high`, `max`, mais pas `medium` ni `xhigh`. La grille retient seulement Low et High ; vérifier la correspondance actuelle dans le runtime avant de promettre son application. Une entrée de catalogue ne prouve ni la réussite du travail ni la disponibilité du compte.
+
+DeepSeek peut devenir le conseil principal d'une tâche admissible si celle-ci est bornée et qu'un bénéfice concret est recherché : préserver le quota Codex, ou reproduire un résultat local favorable à qualité équivalente. Sans ce bénéfice, préférer les profils OpenAI. Ne pas conclure d'un faible tarif API que DeepSeek est moins coûteux pour une personne disposant déjà d'une souscription Codex ; tenir compte du plan Ollama, de la consommation réelle et des reprises. Une performance médiocre sur un essai ne prouve pas non plus une infériorité universelle.
 
 ## Règles de décision à transmettre dans `state`
 
@@ -53,6 +65,8 @@ Terra, GLM, DeepSeek, les autres modèles, Fast, Max et Ultra sont hors de cette
 - Diagnostiquer une incohérence entre authentification, facturation et base de données, avec cause inconnue : candidat `astra_medium` ; pas de migration ou modification pendant le conseil.
 - Développer plusieurs écrans CRUD avec contrats et tests stables, sans décisions ouvertes : candidat `sol_medium`, plutôt que Luna uniquement parce que chaque écran est simple.
 - Livrer une fonctionnalité classique de bout en bout pendant une longue session sans supervision, entre données, permissions, UI et intégration, avec risques de régression tardive : candidat `astra_medium`, sans monter automatiquement à XHigh.
+- Classer un lot d'extraits publics en catégories vérifiables en préservant le quota Codex, avec Ollama Cloud disponible : `deepseek_low` est admissible, à comparer à Luna.
+- Proposer des tests d'une fonction isolée à partir d'un contrat public, avec la même priorité de quota : `deepseek_high` est admissible. « OpenAI seulement » ou une contrainte de données strictement locales doit exclure ces deux profils Cloud avant l'appel Jev.
 
 Ces repères évaluent la cohérence du conseil, pas une réponse obligatoire indépendamment des contraintes de la tâche.
 
@@ -66,6 +80,8 @@ Les capacités et niveaux sont à distinguer de la politique de choix ci-dessus.
 - [Codex, tarification](https://learn.chatgpt.com/docs/pricing) : consommation dépendant du modèle, du contexte, des outils et du cache, pas seulement du nombre de messages.
 - [METR, task-completion time horizons](https://metr.org/time-horizons/) : distingue fiabilité à 50 % et 80 %, et travail dépendant versus lots indépendants. L'horizon correspond au temps humain estimé, pas au nombre d'heures qu'un agent peut tourner. Cette page, mise à jour en mai 2026 lors de la consultation, ne départage pas directement Astra, Sol et Luna.
 - [Anthropic, effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) : travail incrémental, état durable et tests pour limiter pertes de contexte et achèvement prématuré. Retour d'ingénierie sur Claude, pas preuve comparative sur les modèles OpenAI.
+- [Ollama, DeepSeek V4.1 Flash](https://ollama.com/library/deepseek-v4.1-flash) et [intégration Desktop](https://docs.ollama.com/integrations/chatgpt) : slug Cloud et séparation des requêtes Ollama des requêtes aux modèles natifs OpenAI.
+- [Artificial Analysis, DeepSeek V4.1 Flash Max](https://artificialanalysis.ai/models/deepseek-v4-1-flash) : résultats indépendants encourageants mais sortie très volumineuse dans ce benchmark. Ni les mesures Max ni les vitesses chez un fournisseur ne valident la fiabilité de Low/High via Ollama dans RIFF.
 
 Les évaluations agentiques d'Artificial Analysis motivent l'essai d'Astra sur les chaînes longues, mais leurs résultats et efforts ne prouvent pas qu'Astra Medium bat Sol High dans RIFF. Pour valider ce choix, comparer sur les mêmes tâches et le même cadre : réussite complète, défauts/régressions détectés, interventions humaines évitables, temps humain de reprise et consommation totale. Distinguer les problèmes du modèle de ceux du contexte, des outils et des tests. Ne pas lancer ce benchmark ou changer RIFF pendant une simple consultation Jev.
 
