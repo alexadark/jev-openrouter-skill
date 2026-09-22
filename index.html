@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A practical guide to using Jev through OpenRouter for bounded Codex model and reasoning-effort recommendations.">
+<title>Jev Model Guide</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #09090d;
+  --bg-soft: #111019;
+  --surface: #171522;
+  --surface-2: #201c2d;
+  --ink: #f7f5fb;
+  --ink-soft: #bbb6c9;
+  --ink-faint: #8d879d;
+  --accent: #9f67ff;
+  --accent-bright: #c39aff;
+  --accent-soft: rgba(159, 103, 255, .14);
+  --line: #292538;
+  --line-strong: #3b354e;
+  --good: #56dda0;
+  --good-soft: rgba(86, 221, 160, .12);
+  --warn: #ffb86b;
+  --warn-soft: rgba(255, 184, 107, .12);
+  --bad: #ff828b;
+  --term-bg: #f1eff6;
+  --term-bar: #dfdbe9;
+  --term-line: #cec8db;
+  --term-ink: #18141f;
+  --term-accent: #7541c7;
+  --sidebar: #0d0b13;
+  --side-width: 270px;
+  --radius: 16px;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 18px; }
+body {
+  min-width: 300px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent-bright); text-underline-offset: 3px; }
+a:hover { color: #dcc3ff; }
+code {
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--bg-soft);
+  color: var(--accent-bright);
+  font-family: var(--font-mono);
+  font-size: .86em;
+  padding: 1px 5px;
+}
+p { max-width: 66ch; }
+p + p { margin-top: .75rem; }
+strong { color: #fff; }
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 8px;
+  left: 8px;
+  transform: translateY(-160%);
+  border-radius: 7px;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 8px 12px;
+  font-weight: 700;
+}
+.skip-link:focus { transform: translateY(0); }
+
+#progress {
+  position: fixed;
+  z-index: 70;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), #cf7cff);
+}
+
+.sidebar {
+  position: fixed;
+  z-index: 50;
+  inset: 0 auto 0 0;
+  display: flex;
+  width: var(--side-width);
+  flex-direction: column;
+  border-right: 1px solid #000;
+  background: var(--sidebar);
+}
+.brand {
+  display: block;
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+  color: var(--ink);
+  padding: 26px 24px 21px;
+  text-decoration: none;
+}
+.brand b {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 1.26rem;
+  letter-spacing: -.03em;
+}
+.brand small {
+  color: var(--ink-faint);
+  font-size: .67rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.side-nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  overflow-y: auto;
+  padding: 14px 12px;
+}
+.side-nav a {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border-radius: 10px;
+  color: #e7e3ef;
+  font-size: .89rem;
+  font-weight: 600;
+  padding: 9px 13px;
+  text-decoration: none;
+}
+.side-nav a:hover { background: rgba(159, 103, 255, .1); }
+.side-nav a[aria-current="true"] { background: rgba(159, 103, 255, .17); color: #fff; }
+.side-nav .number {
+  width: 21px;
+  flex: none;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: .72rem;
+}
+.side-nav a[aria-current="true"] .number { color: var(--accent); }
+.side-footer {
+  border-top: 1px solid rgba(255, 255, 255, .07);
+  color: var(--ink-faint);
+  font-size: .74rem;
+  line-height: 1.5;
+  padding: 14px 18px 18px;
+}
+
+.content { margin-left: var(--side-width); }
+section, .page-footer {
+  max-width: 1080px;
+  border-bottom: 1px solid var(--line);
+  padding: 72px 58px;
+}
+.page-footer { color: var(--ink-faint); font-size: .86rem; }
+.eyebrow {
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: .16em;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+h1, h2, h3 { line-height: 1.12; }
+h1 {
+  max-width: 12ch;
+  font-size: clamp(2.7rem, 6vw, 5.1rem);
+  letter-spacing: -.055em;
+}
+h1 span { color: var(--accent-bright); }
+h2 {
+  font-size: clamp(1.85rem, 3.7vw, 2.7rem);
+  letter-spacing: -.035em;
+  margin-bottom: .5rem;
+}
+h3 { font-size: 1.08rem; letter-spacing: -.01em; margin-bottom: .45rem; }
+.lede { color: var(--ink-soft); font-size: 1.18rem; margin-top: 1.1rem; }
+.hook {
+  max-width: 33ch;
+  border-left: 3px solid var(--accent);
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 750;
+  line-height: 1.38;
+  margin: 24px 0;
+  padding-left: 19px;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  margin-top: 18px;
+  padding: 21px 23px;
+}
+.card.accent { border-color: rgba(159, 103, 255, .38); background: linear-gradient(180deg, rgba(159, 103, 255, .08), transparent); }
+.card.good { border-color: rgba(86, 221, 160, .3); background: linear-gradient(180deg, rgba(86, 221, 160, .07), transparent); }
+.card.warn { border-color: rgba(255, 184, 107, .35); background: linear-gradient(180deg, rgba(255, 184, 107, .07), transparent); }
+.grid-2, .grid-3 {
+  display: grid;
+  gap: 14px;
+  max-width: 78ch;
+  margin-top: 18px;
+}
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-2 .card, .grid-3 .card { margin-top: 0; }
+.pill {
+  display: inline-block;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  letter-spacing: .08em;
+  margin: 0 5px 6px 0;
+  padding: 3px 9px;
+  text-transform: uppercase;
+}
+.pill.on { border-color: rgba(86, 221, 160, .38); background: var(--good-soft); color: var(--good); }
+.pill.opt { border-color: rgba(159, 103, 255, .42); background: var(--accent-soft); color: var(--accent-bright); }
+
+ul, ol { max-width: 66ch; margin: .75rem 0 .75rem 1.2rem; }
+li { margin-bottom: .34rem; }
+li::marker { color: var(--accent); }
+.flow {
+  max-width: 76ch;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-soft);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: .82rem;
+  line-height: 1.65;
+  margin: 20px 0;
+  padding: 18px 21px;
+  white-space: pre;
+}
+
+.table-wrap { max-width: 100%; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .91rem; margin-top: 20px; }
+th, td { border-bottom: 1px solid var(--line); padding: 11px 13px; text-align: left; vertical-align: top; }
+th {
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+td:first-child { min-width: 130px; }
+td:last-child { color: var(--ink-soft); }
+.group-row td { background: var(--bg-soft); color: var(--accent-bright); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; }
+
+.terminal {
+  position: relative;
+  max-width: 78ch;
+  overflow: hidden;
+  border: 1px solid var(--term-line);
+  border-radius: 12px;
+  background: var(--term-bg);
+  margin: 17px 0;
+}
+.terminal-bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  border-bottom: 1px solid var(--term-line);
+  background: var(--term-bar);
+  padding: 8px 13px;
+}
+.terminal-bar i { width: 10px; height: 10px; border-radius: 50%; background: #c4bed1; }
+pre {
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: .83rem;
+  line-height: 1.62;
+  tab-size: 2;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.terminal pre { color: var(--term-ink); padding: 16px 18px; }
+.prompt { color: var(--term-accent); font-weight: 800; }
+.output {
+  position: relative;
+  max-width: 78ch;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-soft);
+  margin: 17px 0;
+}
+.output pre { color: #d9d4e4; padding: 18px 20px; }
+.copy-button {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  right: 8px;
+  cursor: pointer;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  background: var(--surface-2);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  letter-spacing: .08em;
+  opacity: 0;
+  padding: 5px 10px;
+  text-transform: uppercase;
+}
+.terminal .copy-button { border-color: #bbb4ca; background: #fff; color: #655e73; }
+.terminal:hover .copy-button, .output:hover .copy-button, .copy-button:focus-visible { opacity: 1; }
+.copy-button:hover { border-color: var(--accent); color: var(--accent-bright); }
+.copy-button.done { opacity: 1; border-color: var(--good); color: #168453; }
+
+.step {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  max-width: 76ch;
+  border-bottom: 1px solid var(--line);
+  padding: 15px 0;
+}
+.step-number { color: var(--accent-bright); font-family: var(--font-mono); font-size: .78rem; padding-top: 2px; }
+.step p { margin: 0; }
+.note { color: var(--ink-faint); font-size: .9rem; margin-top: 12px; }
+
+@media (max-width: 940px) {
+  .sidebar { position: static; width: 100%; }
+  .side-nav { flex: none; flex-direction: row; flex-wrap: wrap; }
+  .side-footer { display: none; }
+  .content { margin-left: 0; }
+  section, .page-footer { padding: 48px 24px; }
+  #progress { position: fixed; }
+}
+@media (max-width: 700px) {
+  body { font-size: 16px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .side-nav { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 12px; }
+  .side-nav a { flex: none; }
+  h1 { font-size: clamp(2.45rem, 15vw, 4.2rem); }
+  th, td { min-width: 155px; }
+}
+@media (hover: none) { .copy-button { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div id="progress" aria-hidden="true"></div>
+
+<aside class="sidebar">
+  <a class="brand" href="#start"><b>Jev Model Guide</b><small>Bounded advice for Codex</small></a>
+  <nav class="side-nav" aria-label="Guide sections">
+    <a href="#start"><span class="number">01</span> Start here</a>
+    <a href="#boundary"><span class="number">02</span> The boundary</a>
+    <a href="#grid"><span class="number">03</span> Model grid</a>
+    <a href="#install"><span class="number">04</span> Install</a>
+    <a href="#ask"><span class="number">05</span> Ask Jev</a>
+    <a href="#answer"><span class="number">06</span> Read the answer</a>
+    <a href="#data"><span class="number">07</span> Data rules</a>
+    <a href="#troubleshoot"><span class="number">08</span> Troubleshoot</a>
+    <a href="#reference"><span class="number">09</span> Reference</a>
+  </nav>
+  <div class="side-footer">Codex-only v1<br>Model grid researched 2026-09-22</div>
+</aside>
+
+<main class="content" id="main">
+<section id="start" aria-labelledby="start-title">
+  <div class="eyebrow">Structured judgment, not task execution</div>
+  <h1 id="start-title">Choose the right model <span>before</span> the work begins.</h1>
+  <p class="lede">Jev compares an explicit set of model profiles for the task you describe. It recommends one. You decide whether to switch.</p>
+
+  <div class="card accent">
+    <h3>The one sentence</h3>
+    <p>Use Jev for a bounded recommendation, then select the model and reasoning effort manually in Codex.</p>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <span class="pill on">First</span>
+      <h3>Reliability</h3>
+      <p>Prefer the profile most likely to stay correct across the whole task.</p>
+    </div>
+    <div class="card">
+      <span class="pill opt">Second</span>
+      <h3>Interventions</h3>
+      <p>Reduce avoidable supervision, retries, and context recovery.</p>
+    </div>
+    <div class="card">
+      <span class="pill">Third</span>
+      <h3>Total cost</h3>
+      <p>Count execution, validation, retries, and human recovery together.</p>
+    </div>
+  </div>
+</section>
+
+<section id="boundary" aria-labelledby="boundary-title">
+  <div class="eyebrow">02 · Keep the layers clear</div>
+  <h2 id="boundary-title">The adviser is not the worker</h2>
+  <div class="hook">Jev chooses among profiles. It does not do the task, authorize it, or change your model.</div>
+
+  <div class="flow">YOUR TASK DESCRIPTION
+        |
+        v
+CODEX SKILL  -- minimal state + allowed choices -->  JEV VIA OPENROUTER
+        ^                                            |
+        |                                            v
+        +------------- structured choice + probabilities
+        |
+        v
+YOU REVIEW THE ADVICE  -->  MANUAL MODEL SWITCH  -->  TASK STARTS LATER</div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Layer</th><th>Role</th><th>Consumption</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Codex</strong></td><td>Runs the skill and can later perform the task.</td><td>Native OpenAI models remain through your Codex subscription.</td></tr>
+        <tr><td><strong>Jev</strong></td><td>Makes one structured judgment from the supplied profiles.</td><td>The consultation uses OpenRouter.</td></tr>
+        <tr><td><strong>DeepSeek</strong></td><td>Optional execution model after a manual choice.</td><td>DeepSeek V4.1 Flash uses Ollama Cloud and is consumed separately.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card warn">
+    <h3>No automatic routing</h3>
+    <p>The skill does not alter your active model, delegate the described work, or begin it. The model switch remains manual.</p>
+  </div>
+</section>
+
+<section id="grid" aria-labelledby="grid-title">
+  <div class="eyebrow">03 · Researched 2026-09-22</div>
+  <h2 id="grid-title">Use the smallest profile that preserves the outcome</h2>
+  <p class="lede">Duration alone does not determine the model. Separate reasoning difficulty from step dependency, validation quality, autonomy, and the cost of a late error.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Profile</th><th>Use it for</th><th>Do not treat it as</th></tr></thead>
+      <tbody>
+        <tr class="group-row"><td colspan="3">Luna · bounded and mechanical work</td></tr>
+        <tr><td><strong>Luna Low</strong></td><td>Short translation, titles, simple reformulation, exact extraction, classification, targeted lookup.</td><td>A fit for architecture, product judgment, or sensitive decisions.</td></tr>
+        <tr><td><strong>Luna Medium</strong></td><td>Bounded inventory, constrained extraction, a small known-cause fix with a clear test.</td><td>Too small merely because the input is long.</td></tr>
+        <tr><td><strong>Luna High</strong></td><td>Substantial bounded implementation, stable contracts, multi-step logic, observable tests.</td><td>The default owner of a long unsupervised integration chain.</td></tr>
+        <tr><td><strong>Luna XHigh</strong></td><td>A bounded task with a concrete reasoning problem that High did not resolve.</td><td>A routine setting. XHigh is exceptional.</td></tr>
+
+        <tr class="group-row"><td colspan="3">Sol · synthesis and well-specified prolonged work</td></tr>
+        <tr><td><strong>Sol Medium</strong></td><td>Faithful synthesis, meeting preparation, polished writing, scoped comparison, everyday development, or a prolonged task with stable contracts and strong checks.</td><td>A reason to ignore costly cross-system dependency risk.</td></tr>
+        <tr><td><strong>Sol High</strong></td><td>Sol work with specific nested constraints or contradictions that Medium may miss.</td><td>An automatic reliability upgrade for every long task.</td></tr>
+
+        <tr class="group-row"><td colspan="3">Astra · dependent long runs and hard diagnosis</td></tr>
+        <tr><td><strong>Astra Medium</strong></td><td>Long dependent runs, multiple tools or components, costly late errors, architecture, ambiguous diagnosis, complex planning.</td><td>A profile that first requires failure on a smaller model.</td></tr>
+        <tr><td><strong>Astra High</strong></td><td>A precisely identified critical difficulty not resolved at Medium, or clearly requiring deeper analysis.</td><td>A permanent setting after the hard part is resolved.</td></tr>
+        <tr><td><strong>Astra XHigh</strong></td><td>Exceptional complexity with a documented High-level impasse or equivalent evidence.</td><td>An automatic choice for a large phase, long document, or important request.</td></tr>
+
+        <tr class="group-row"><td colspan="3">DeepSeek V4.1 Flash · conditional through Ollama Cloud</td></tr>
+        <tr><td><strong>DeepSeek Low</strong></td><td>Bounded, verifiable classification, transformation, or drafting when data is eligible and preserving Codex quota matters.</td><td>A local model, an included Codex model, or a default replacement for Luna.</td></tr>
+        <tr><td><strong>DeepSeek High</strong></td><td>Selected-excerpt synthesis, test proposals, or an isolated fix with a clear contract and validation.</td><td>The default for a dependent autonomous run. Max benchmarks do not prove High behavior.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card good">
+    <h3>Reasoning effort is not endurance</h3>
+    <p>High and XHigh respond to identified reasoning difficulty. Long execution also depends on durable state, bounded steps, useful checks, and visible completion criteria.</p>
+  </div>
+</section>
+
+<section id="install" aria-labelledby="install-title">
+  <div class="eyebrow">04 · Codex-only v1</div>
+  <h2 id="install-title">Install the skill</h2>
+  <p>Use the agent skill installer for the preferred setup path.</p>
+
+  <div class="terminal copyable">
+    <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+    <pre><span class="prompt">$</span> npx skills add alexadark/jev-openrouter-skill --skill jev-openrouter</pre>
+  </div>
+
+  <h3>Manual fallback</h3>
+  <p>Copy the entire skill directory. Cloning the repository directly into the Codex skills directory preserves every required file.</p>
+
+  <div class="terminal copyable">
+    <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+    <pre><span class="prompt">$</span> mkdir -p ~/.agents/skills
+<span class="prompt">$</span> git clone https://github.com/alexadark/jev-openrouter-skill ~/.agents/skills/jev-openrouter</pre>
+  </div>
+
+  <h3>Set the key without saving it in the repository</h3>
+  <p>Use your password manager, secret manager, or a protected shell environment. This temporary-session pattern keeps the value out of the command itself and out of shell history:</p>
+
+  <div class="terminal copyable">
+    <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+    <pre><span class="prompt">$</span> read -s "OPENROUTER_API_KEY?OpenRouter API key: "
+<span class="prompt">$</span> export OPENROUTER_API_KEY</pre>
+  </div>
+
+  <div class="step"><div class="step-number">01</div><p><strong>Install.</strong> Use <code>npx skills add</code>, or place the entire repository at <code>~/.agents/skills/jev-openrouter</code> manually.</p></div>
+  <div class="step"><div class="step-number">02</div><p><strong>Set the secret.</strong> Export <code>OPENROUTER_API_KEY</code> in the environment that launches Codex.</p></div>
+  <div class="step"><div class="step-number">03</div><p><strong>Restart.</strong> Start a fresh Codex session so it discovers the skill and inherits the variable.</p></div>
+
+  <div class="card warn">
+    <h3>Alpha endpoint</h3>
+    <p>The skill calls OpenRouter's alpha Decisions endpoint. Its contract can change. A failed request should be reported, not silently replaced with the main model's opinion.</p>
+  </div>
+</section>
+
+<section id="ask" aria-labelledby="ask-title">
+  <div class="eyebrow">05 · Explicit invocation</div>
+  <h2 id="ask-title">Describe the decision, then stop</h2>
+  <p class="lede">Name the skill, describe the future task, state provider or data constraints, and end with “Do not start the task.”</p>
+
+  <h3>OpenAI-only example</h3>
+  <div class="output copyable"><pre>Use $jev-openrouter to recommend the model and reasoning effort for:
+Summarize a 90-minute customer interview into themes, evidence, risks, and next actions.
+Use OpenAI profiles only.
+Do not start the task.</pre></div>
+
+  <h3>Consider DeepSeek example</h3>
+  <div class="output copyable"><pre>Use $jev-openrouter to recommend the model and reasoning effort for:
+Classify 400 public product reviews into an existing taxonomy and return schema-valid JSON.
+Ollama Cloud is available, these public reviews may be sent there, and preserving Codex quota matters.
+Consider DeepSeek as well as OpenAI.
+Do not start the task.</pre></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Useful constraints</h3>
+      <ul>
+        <li>Reasoning difficulty and ambiguity.</li>
+        <li>Independent or dependent steps.</li>
+        <li>Available automated checks.</li>
+        <li>Cost of an error found late.</li>
+        <li>Desired autonomy.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Leave out by default</h3>
+      <ul>
+        <li>The whole conversation.</li>
+        <li>An entire repository or vault.</li>
+        <li>Raw customer or employee records.</li>
+        <li>Credentials or private configuration.</li>
+        <li>Source text not needed for the choice.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="answer" aria-labelledby="answer-title">
+  <div class="eyebrow">06 · Interpret, do not overclaim</div>
+  <h2 id="answer-title">A recommendation has a narrow shape</h2>
+  <p>A useful answer names one profile, explains the fit, gives a concrete reason to re-evaluate, and preserves the boundary between Jev's choice and Codex's explanation.</p>
+
+  <div class="output copyable"><pre>Recommendation: gpt-5.6-sol, Medium
+
+Why: The task requires faithful synthesis and prioritization, but its sources,
+output structure, and validation criteria are already bounded.
+
+Re-evaluate if: contradictions across sources become material or the work expands
+into a dependent multi-system implementation.
+
+Jev choice: sol_medium, 0.62 among the supplied options
+Decision model: shown only if returned by OpenRouter
+Cost: shown only if returned by OpenRouter
+
+Manual next step: select Sol and Medium in Codex if you accept the recommendation.</pre></div>
+
+  <p class="note">Illustrative format only. This is not a live Jev result or a performance claim.</p>
+
+  <div class="card accent">
+    <h3>Probabilities are choices, not success rates</h3>
+    <p>A value such as <code>0.62</code> is Jev's preference among the options it received. It is not a 62 percent chance that the task will succeed, a calibrated reliability score, or a promised saving.</p>
+  </div>
+
+  <div class="card">
+    <h3>Only report returned identity</h3>
+    <p>Name Jev's decision model and reported cost only when the OpenRouter response includes those fields. Never infer or promise an identity, cost, or outcome.</p>
+  </div>
+</section>
+
+<section id="data" aria-labelledby="data-title">
+  <div class="eyebrow">07 · Provider and data constraints</div>
+  <h2 id="data-title">Eligibility comes before comparison</h2>
+  <div class="hook">A model that cannot receive the data is not an option.</div>
+
+  <div class="grid-2">
+    <div class="card good">
+      <h3>OpenAI only</h3>
+      <p>Exclude DeepSeek before the Jev call. Compare only Luna, Sol, and Astra profiles allowed by the task.</p>
+    </div>
+    <div class="card warn">
+      <h3>Strictly local data</h3>
+      <p>Exclude every cloud profile in this guide, including OpenAI and DeepSeek. Report that no profile is admissible.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>DeepSeek is conditional</h3>
+    <ul>
+      <li>Confirm that Ollama Cloud and the exact model profile are currently available.</li>
+      <li>Confirm that the destination is permitted for the data.</li>
+      <li>Use a concrete reason, such as preserving Codex quota or reproducing a favorable verified comparison.</li>
+      <li>Do not describe it as local, included in Codex, or an automatic fallback.</li>
+    </ul>
+  </div>
+
+  <div class="card warn">
+    <h3>More effort cannot repair missing authority</h3>
+    <p>Tools, permissions, source access, and acceptance criteria are task constraints. No reasoning level can grant access, authorize a change, or replace a missing source.</p>
+  </div>
+</section>
+
+<section id="troubleshoot" aria-labelledby="troubleshoot-title">
+  <div class="eyebrow">08 · Common failures</div>
+  <h2 id="troubleshoot-title">When the advice path breaks</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Symptom</th><th>What to check</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Skill not found</strong></td><td>Confirm the repository is at <code>~/.agents/skills/jev-openrouter</code>, then start Codex fresh.</td></tr>
+        <tr><td><strong>API key unavailable</strong></td><td>Export <code>OPENROUTER_API_KEY</code> in the environment that launches Codex. Never put the value in the repository.</td></tr>
+        <tr><td><strong>Request rejected</strong></td><td>The Decisions endpoint is alpha. Review the current OpenRouter and TypeSafe contract before changing the wrapper.</td></tr>
+        <tr><td><strong>DeepSeek absent</strong></td><td>It may have been filtered by an OpenAI-only or data rule, or Ollama Cloud availability may be unknown.</td></tr>
+        <tr><td><strong>Advice feels overpowered</strong></td><td>Look for a real reasoning difficulty, dependent steps, weak validation, or expensive late errors. Importance alone is not enough.</td></tr>
+        <tr><td><strong>One profile remains</strong></td><td>The user's restriction already decides the choice. A Jev comparison adds no useful information.</td></tr>
+        <tr><td><strong>No model identity or cost</strong></td><td>Those fields are optional. Show them only when OpenRouter returns them.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="reference" aria-labelledby="reference-title">
+  <div class="eyebrow">09 · Keep the guide close</div>
+  <h2 id="reference-title">Reference files</h2>
+  <p class="lede">The repository includes the concise setup path, a presentation-friendly Markdown version, and this standalone handbook.</p>
+
+  <div class="grid-3">
+    <div class="card accent"><h3>README</h3><p>Install, invoke, and understand the runtime boundary.</p><p><a href="README.md">Open README.md</a></p></div>
+    <div class="card"><h3>Model guide</h3><p>Use the same policy in portable Markdown.</p><p><a href="MODEL-GUIDE.md">Open MODEL-GUIDE.md</a></p></div>
+    <div class="card"><h3>License</h3><p>Review the terms for use and distribution.</p><p><a href="LICENSE">Open LICENSE</a></p></div>
+  </div>
+
+  <div class="card warn">
+    <h3>A dated guide, not a promise</h3>
+    <p>The model grid was researched on 2026-09-22. Model availability, runtime effort levels, provider terms, and the alpha endpoint may change. Verify current capabilities when they matter.</p>
+  </div>
+</section>
+
+<footer class="page-footer">
+  <p>Jev Model Guide · Codex-only v1 · No tracking, external assets, or network JavaScript.</p>
+</footer>
+</main>
+
+<script>
+(() => {
+  const progress = document.getElementById('progress');
+  const updateProgress = () => {
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = scrollable > 0 ? Math.min(100, Math.max(0, window.scrollY / scrollable * 100)) : 0;
+    progress.style.width = `${percent}%`;
+  };
+  updateProgress();
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+
+  const links = [...document.querySelectorAll('.side-nav a')];
+  const sections = [...document.querySelectorAll('main section')];
+  const setCurrent = id => links.forEach(link => {
+    if (link.getAttribute('href') === `#${id}`) link.setAttribute('aria-current', 'true');
+    else link.removeAttribute('aria-current');
+  });
+  if (sections.length) setCurrent(sections[0].id);
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries.filter(entry => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      if (visible[0]) setCurrent(visible[0].target.id);
+    }, { rootMargin: '-18% 0px -62% 0px', threshold: [0, .15, .5] });
+    sections.forEach(section => observer.observe(section));
+  }
+
+  document.querySelectorAll('.copyable').forEach(block => {
+    const button = document.createElement('button');
+    button.className = 'copy-button';
+    button.type = 'button';
+    button.textContent = 'Copy';
+    button.setAttribute('aria-label', 'Copy example');
+    block.appendChild(button);
+
+    button.addEventListener('click', async () => {
+      const source = block.querySelector('pre');
+      const text = source ? source.innerText.replace(/^\$ /gm, '') : '';
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+      }
+      button.textContent = 'Copied';
+      button.classList.add('done');
+      setTimeout(() => {
+        button.textContent = 'Copy';
+        button.classList.remove('done');
+      }, 1500);
+    });
+  });
+})();
+</script>
+</body>
+</html>

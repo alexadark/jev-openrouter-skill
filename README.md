@@ -1,0 +1,66 @@
+# Jev Model Guide
+
+Jev Model Guide is a Codex skill for one bounded decision: recommend a model and reasoning effort for a described task. It asks TypeSafe Jev through OpenRouter for a structured judgment, then returns the recommendation without starting the task or changing your active model.
+
+This first public release supports Codex only.
+
+## What it does
+
+- Compares a dated, explicit set of OpenAI profiles.
+- Can consider DeepSeek V4.1 Flash through Ollama Cloud when you allow it.
+- Prioritizes end-to-end reliability, then fewer avoidable interventions, then total cost.
+- Keeps Jev's structured choice separate from Codex's explanation.
+
+It does not route work automatically. Native OpenAI models continue through your Codex subscription. The Jev consultation uses OpenRouter. DeepSeek, if you later select it, uses Ollama Cloud and separate consumption.
+
+## Install
+
+Prerequisites:
+
+- Codex
+- Git
+- An OpenRouter API key with access to the alpha Decisions endpoint
+
+Use the agent skill installer:
+
+```bash
+npx skills add alexadark/jev-openrouter-skill --skill jev-openrouter
+```
+
+If you prefer a manual install, clone the entire public repository into the Codex skills directory:
+
+```bash
+mkdir -p ~/.agents/skills
+git clone https://github.com/alexadark/jev-openrouter-skill ~/.agents/skills/jev-openrouter
+```
+
+Set `OPENROUTER_API_KEY` through your shell, password manager, or secret manager. Do not paste a key into the skill files or commit it to Git. For a temporary terminal session without putting the value in shell history:
+
+```bash
+read -s "OPENROUTER_API_KEY?OpenRouter API key: "
+export OPENROUTER_API_KEY
+```
+
+Start Codex fresh from that environment so it discovers the skill and receives the variable.
+
+## Use
+
+Invoke the skill explicitly and tell it not to begin the described work:
+
+```text
+Use $jev-openrouter to recommend the model and reasoning effort for:
+Prepare a faithful executive synthesis of six interview transcripts.
+Do not start the task.
+```
+
+For OpenAI-only advice, say so. To make DeepSeek eligible, state that Ollama Cloud is available, the data can be sent there, and you want it considered.
+
+The OpenRouter Decisions endpoint is alpha. Returned probabilities describe Jev's preference among the supplied choices. They are not success rates. The response identifies Jev's decision model only when OpenRouter returns that field.
+
+## Read next
+
+- [Model guide](MODEL-GUIDE.md)
+- [Standalone handbook](index.html)
+- [MIT License](LICENSE)
+
+The model grid was researched on 2026-09-22. Treat it as a dated decision policy, not a universal benchmark.
