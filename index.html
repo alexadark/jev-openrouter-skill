@@ -373,7 +373,7 @@ pre {
     <a href="#troubleshoot"><span class="number">08</span> Troubleshoot</a>
     <a href="#reference"><span class="number">09</span> Reference</a>
   </nav>
-  <div class="side-footer">Codex-only v1<br>Model grid researched 2026-09-22</div>
+  <div class="side-footer">Codex-only v1<br>Model grid researched 2026-09-24</div>
 </aside>
 
 <main class="content" id="main">
@@ -440,7 +440,7 @@ YOU REVIEW THE ADVICE  -->  MANUAL MODEL SWITCH  -->  TASK STARTS LATER</div>
 </section>
 
 <section id="grid" aria-labelledby="grid-title">
-  <div class="eyebrow">03 · Researched 2026-09-22</div>
+  <div class="eyebrow">03 · Researched 2026-09-24</div>
   <h2 id="grid-title">Use the smallest profile that preserves the outcome</h2>
   <p class="lede">Duration alone does not determine the model. Separate reasoning difficulty from step dependency, validation quality, autonomy, and the cost of a late error.</p>
 
@@ -463,6 +463,7 @@ YOU REVIEW THE ADVICE  -->  MANUAL MODEL SWITCH  -->  TASK STARTS LATER</div>
         <tr><td><strong>Astra High</strong></td><td>A precisely identified critical difficulty not resolved at Medium, or clearly requiring deeper analysis.</td><td>A permanent setting after the hard part is resolved.</td></tr>
         <tr><td><strong>Astra XHigh</strong></td><td>Exceptional complexity with a documented High-level impasse or equivalent evidence.</td><td>An automatic choice for a large phase, long document, or important request.</td></tr>
 
+        <tr><td><strong>Claude Opus 5.5</strong></td><td>Medium for coding and knowledge work. Low for bounded work; High, XHigh or Max for justified reasoning difficulty. <a href="references/claude-opus-5-5.md">Research and limits</a>.</td><td>Requires Claude Code or a verified Anthropic runtime and separate access. Not a native Codex model or a proven local winner over Astra.</td></tr>
         <tr class="group-row"><td colspan="3">DeepSeek V4.1 Flash · conditional through Ollama Cloud</td></tr>
         <tr><td><strong>DeepSeek Low</strong></td><td>Bounded, verifiable classification, transformation, or drafting when data is eligible and preserving Codex quota matters.</td><td>A local model, an included Codex model, or a default replacement for Luna.</td></tr>
         <tr><td><strong>DeepSeek High</strong></td><td>Selected-excerpt synthesis, test proposals, or an isolated fix with a clear contract and validation.</td><td>The default for a dependent autonomous run. Max benchmarks do not prove High behavior.</td></tr>
@@ -596,11 +597,11 @@ Manual next step: select Sol and Medium in Codex if you accept the recommendatio
   <div class="grid-2">
     <div class="card good">
       <h3>OpenAI only</h3>
-      <p>Exclude DeepSeek before the Jev call. Compare only Luna, Sol, and Astra profiles allowed by the task.</p>
+      <p>Exclude Claude and DeepSeek before the Jev call. Compare only Luna, Sol, and Astra profiles allowed by the task.</p>
     </div>
     <div class="card warn">
       <h3>Strictly local data</h3>
-      <p>Exclude every cloud profile in this guide, including OpenAI and DeepSeek. Report that no profile is admissible.</p>
+      <p>Exclude every cloud profile in this guide, including OpenAI, Claude and DeepSeek. Report that no profile is admissible.</p>
     </div>
   </div>
 
@@ -653,7 +654,7 @@ Manual next step: select Sol and Medium in Codex if you accept the recommendatio
 
   <div class="card warn">
     <h3>A dated guide, not a promise</h3>
-    <p>The model grid was researched on 2026-09-22. Model availability, runtime effort levels, provider terms, and the alpha endpoint may change. Verify current capabilities when they matter.</p>
+    <p>The model grid was researched on 2026-09-24. Model availability, runtime effort levels, provider terms, and the alpha endpoint may change. Verify current capabilities when they matter.</p>
   </div>
 </section>
 

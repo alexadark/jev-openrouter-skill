@@ -7,11 +7,12 @@ This first public release supports Codex only.
 ## What it does
 
 - Compares a dated, explicit set of OpenAI profiles.
+- Includes Claude Opus 5.5 when Anthropic execution is allowed; see the [sourced assessment](references/claude-opus-5-5.md).
 - Can consider DeepSeek V4.1 Flash through Ollama Cloud when you allow it.
 - Prioritizes end-to-end reliability, then fewer avoidable interventions, then total cost.
 - Keeps Jev's structured choice separate from Codex's explanation.
 
-It does not route work automatically. Native OpenAI models continue through your Codex subscription. The Jev consultation uses OpenRouter. DeepSeek, if you later select it, uses Ollama Cloud and separate consumption.
+It does not route work automatically. Native OpenAI models continue through your Codex subscription. The Jev consultation uses OpenRouter. Claude execution requires Claude Code or a verified Anthropic-compatible runtime and separate access. DeepSeek, if you later select it, uses Ollama Cloud and separate consumption.
 
 ## Install
 
@@ -69,4 +70,4 @@ Inspect the effective source with `python3 <skill-directory>/scripts/model_catal
 - [Standalone handbook](index.html)
 - [MIT License](LICENSE)
 
-The model grid was researched on 2026-09-22. Treat it as a dated decision policy, not a universal benchmark.
+The model grid was updated on 2026-09-24 for Claude Opus 5.5. Treat it as a dated decision policy, not a universal benchmark.

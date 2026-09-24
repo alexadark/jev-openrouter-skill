@@ -2,11 +2,11 @@
 
 > A bounded decision adviser for Codex. Jev recommends a model profile. It does not perform the task, change the active model, or route work automatically.
 
-**Grid date:** 2026-09-22  
+**Grid date:** 2026-09-24
 **Runtime:** Codex-only v1  
 **Decision order:** reliability first, avoidable interventions second, total cost third
 
-## The three systems stay separate
+## Execution and advice stay separate
 
 | Layer | Role | Consumption |
 | --- | --- | --- |
@@ -14,7 +14,7 @@
 | Jev through OpenRouter | Makes one structured recommendation from the allowed profiles | OpenRouter usage |
 | DeepSeek V4.1 Flash | Optional execution model only when eligible and manually selected | Ollama Cloud, consumed separately |
 
-There is no automatic switch. After reading the recommendation, you choose the model and effort manually in Codex.
+There is no automatic switch. After reading the recommendation, you choose the model and effort manually in the compatible execution runtime.
 
 ## Model grid
 
@@ -33,6 +33,7 @@ The grid is a practical policy, not a promise of model performance. High and XHi
 | **Astra Medium** | Dependent long runs, multiple tools or components, expensive late errors, architecture, ambiguous diagnosis, complex planning | May be selected directly when the dependency risk is real; no smaller-model failure ritual is required |
 | **Astra High** | Precisely identified critical difficulty not resolved at Medium, or clearly requiring deeper analysis | Use for one bounded pass, then return to Medium after resolving it |
 | **Astra XHigh** | Exceptional complexity with a documented High-level impasse or equivalent evidence | Never automatic for a large phase, long document, or important request |
+| **Opus 5.5 Low / Medium / High / XHigh / Max** | Medium starts coding and knowledge work; Low for bounded simple work; higher efforts for demonstrated reasoning difficulty | Claude Code or verified Anthropic runtime, separate access; [research and limits](references/claude-opus-5-5.md) |
 | **DeepSeek Low** | Conditional: bounded classification, data transformation, or drafting from supplied excerpts | Ollama Cloud must be available, data must be eligible, and preserving Codex quota or a favorable local comparison must matter |
 | **DeepSeek High** | Conditional: synthesis of selected excerpts, test proposals, or an isolated fix with a clear contract and validation | Not the default for a long, dependent, autonomous run; Max benchmark results do not prove High behavior |
 
@@ -80,7 +81,7 @@ The probability is Jev's distribution across the choices it received. It is not 
 
 Jev receives only the state needed to make the decision. Do not send a repository, vault, transcript, customer record, or conversation history by default. Summarize the task and disclose only the constraints needed for model selection.
 
-An OpenAI-only constraint excludes DeepSeek. A strictly local-data constraint excludes every cloud profile in this grid, including OpenAI and DeepSeek. If no profile is admissible, the skill should say so rather than export data or invent an option.
+An OpenAI-only constraint excludes Claude and DeepSeek. A strictly local-data constraint excludes every cloud profile in this grid, including OpenAI, Claude and DeepSeek. If no profile is admissible, the skill should say so rather than export data or invent an option.
 
 Tools, permissions, missing sources, and unclear acceptance criteria are not solved by more reasoning effort. Fix the constraint or state the assumption first.
 

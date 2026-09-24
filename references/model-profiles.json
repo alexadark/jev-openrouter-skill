@@ -1,8 +1,10 @@
 {
-  "version": "2026-09-22.1",
+  "version": "2026-09-24.1",
   "status": "Proposed reliability-first policy, not a locally validated performance ranking.",
   "objective": "Correct end-to-end completion first, minimal avoidable human intervention second, then total consumption and elapsed time including retries. Advice selects a primary model, not a mandatory orchestrator plus worker.",
   "rules": [
+    "Account for supplied subscription context before API list prices: compare included capacity, interruption risk, switching cost and task quality. Already-paid plan prices are not per-task charges or cross-provider quota ratios. Opus has independent evidence for strong knowledge work and competitive terminal coding, but higher-effort token use can be substantial; do not extrapolate Max benchmarks to Medium or Pro endurance.",
+    "Claude Opus 5.5 is an additional candidate for coding and knowledge work when Anthropic execution is allowed. Use Claude Code or a verified Anthropic-compatible runtime, with separate access and consumption; a catalog entry does not make it a native Codex model. Start at Medium; raise effort for demonstrated difficulty. Provider evaluations are not a local ranking against Sol or Astra.",
     "Evaluate reasoning difficulty separately from dependent steps, desired autonomy, automatic error detection and late-error cost. Duration, prompt length and repository size alone do not determine the model.",
     "Many independent transformations with schema validation may remain Luna work. Ordinary code spanning data, permissions, interface and integration without supervision can justify Astra Medium.",
     "Prefer OpenAI for ordinary use. Luna handles bounded units; Sol handles well-specified prolonged work; Astra handles dependent autonomous chains and ambiguous diagnosis. These are hypotheses to validate on the actual workflow, not guaranteed win rates.",
@@ -15,6 +17,11 @@
     "Do not research new benchmarks on every consultation. Refresh relevant sources when a model becomes unavailable or current performance is explicitly requested. Jev chooses within this supplied grid; it does not invent missing benchmarks."
   ],
   "profiles": [
+    {"id":"opus_5_5_low","model":"claude-opus-5-5","effort":"low","provider":"anthropic","usage":"Simple, bounded extraction or rewriting when Anthropic execution is allowed and latency matters. Verify quality before using reduced effort; not the default for dependent autonomous work. Requires eligible data and verified model/effort access in Claude Code or an Anthropic-compatible runtime; separate from native Codex usage."},
+    {"id":"opus_5_5_medium","model":"claude-opus-5-5","effort":"medium","provider":"anthropic","usage":"Default Opus 5.5 starting point for coding, source synthesis and prolonged tool-based knowledge work. Consider alongside Sol for well-specified execution and Astra for dependent autonomous work. Validate with the actual harness; no established local advantage over either model. Requires eligible data and verified model/effort access in Claude Code or an Anthropic-compatible runtime; separate from native Codex usage."},
+    {"id":"opus_5_5_high","model":"claude-opus-5-5","effort":"high","provider":"anthropic","usage":"Opus work with a specific difficult diagnosis, architectural tradeoff or conflicting evidence requiring deeper reasoning than Medium. Return to Medium after the bounded difficulty is resolved; duration alone is insufficient. Requires eligible data and verified model/effort access in Claude Code or an Anthropic-compatible runtime; separate from native Codex usage."},
+    {"id":"opus_5_5_xhigh","model":"claude-opus-5-5","effort":"xhigh","provider":"anthropic","usage":"Demanding long-horizon coding or agentic reasoning when High is insufficient or the reasoning difficulty is explicit and extra token use is acceptable. Require checkpoints and end-to-end verification, not a generic reliability premium. Requires eligible data and verified model/effort access in Claude Code or an Anthropic-compatible runtime; separate from native Codex usage."},
+    {"id":"opus_5_5_max","model":"claude-opus-5-5","effort":"max","provider":"anthropic","usage":"Exceptional reasoning bottleneck with concrete justification beyond XHigh and an accepted consumption budget. Not a routine execution profile or a guarantee of correctness. Requires eligible data and verified model/effort access in Claude Code or an Anthropic-compatible runtime; separate from native Codex usage."},
     {"id":"luna_low","model":"gpt-5.6-luna","effort":"low","provider":"openai","usage":"Short translation, titles, simple rephrasing, classification, exact extraction or locating a known file. Low ambiguity and easily checked output. No architecture or sensitive judgment."},
     {"id":"luna_medium","model":"gpt-5.6-luna","effort":"medium","provider":"openai","usage":"Bounded inventory, extraction with several constraints or a small known-cause fix with a clear test. A long document alone does not require a larger model for mechanical work."},
     {"id":"luna_high","model":"gpt-5.6-luna","effort":"high","provider":"openai","usage":"Substantial but bounded implementation with stable contracts, multistep logic and observable tests. A verifiable unit, not the default owner of a long unsupervised integration chain. No unresolved product, permissions or architecture decisions."},
@@ -28,6 +35,14 @@
     {"id":"deepseek_high","model":"deepseek-v4.1-flash:cloud","effort":"high","provider":"ollama","usage":"Conditional Ollama Cloud option for synthesis of selected excerpts, test proposals or an isolated fix with explicit contract and verification. Requires a quota-saving goal or favorable local evidence. Not the default owner of long interdependent autonomous execution. Max benchmarks do not prove High performance."}
   ],
   "sources": [
+    "https://artificialanalysis.ai/articles/claude-opus-5-5/",
+    "https://www.coderabbit.ai/blog/opus-5-5-model-review",
+    "https://support.claude.com/en/articles/8325606-what-is-the-pro-plan",
+    "https://developers.openai.com/api/docs/models/gpt-6-astra",
+    "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+    "https://platform.claude.com/docs/en/build-with-claude/effort",
+    "https://www.anthropic.com/claude-opus-5-5",
+    "https://support.claude.com/en/articles/11940350-claude-code-model-configuration",
     "https://developers.openai.com/api/docs/models",
     "https://learn.chatgpt.com/docs/pricing",
     "https://artificialanalysis.ai/models/releases/gpt-5-6-luna",

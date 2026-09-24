@@ -1,4 +1,4 @@
-# Shared OpenAI and DeepSeek model catalog
+# Shared OpenAI, Claude and DeepSeek model catalog
 
 Read the complete JSON returned by `python3 <skill-directory>/scripts/model_catalog.py` before giving model advice. It contains the version, objective, complete profile definitions, decision rules and research sources. This reference is a loading contract, not a second editable model grid.
 
@@ -14,6 +14,6 @@ Include the selected catalog's `version`, `status`, `objective` and complete `ru
 
 Keep reasoning difficulty, dependent steps, autonomy, verification and late-error cost separate. The catalog's priority is end-to-end correctness, then fewer avoidable interventions, then total consumption. It remains a dated operating hypothesis, not a local benchmark or universal ranking.
 
-Filter before sending: explicit OpenAI-only excludes DeepSeek; strictly local data excludes all these cloud profiles and the Jev call for that data. DeepSeek requires checked Ollama Cloud availability, data admissibility and a concrete quota or locally demonstrated benefit. Unknown availability is not proof of support. Zero profiles means report incompatibility; one means explain the constrained choice without a redundant call.
+Filter before sending: explicit OpenAI-only excludes Claude and DeepSeek; strictly local data excludes all these cloud profiles and the Jev call for that data. Claude requires eligible data and verified model/effort access in Claude Code or an Anthropic-compatible runtime; unknown access means an alternative to verify, not native Codex support. DeepSeek requires checked Ollama Cloud availability, data admissibility and a concrete quota or locally demonstrated benefit. Unknown availability is not proof of support. Zero profiles means report incompatibility; one means explain the constrained choice without a redundant call.
 
 Advice never starts the described work, switches the model, authorizes data export for later execution, changes RIFF or installs an orchestrator. Explain the actual selected profile separately from Jev's raw probabilities; they are not success rates. Other explicitly requested Jev decisions do not need this catalog.
