@@ -60,7 +60,7 @@ Do not start the task.
 ## What a useful answer looks like
 
 ```text
-Recommendation: gpt-5.6-sol, Medium
+Recommendation: gpt-6-sol, Medium
 
 Why: The task requires faithful synthesis and prioritization, but its sources,
 output structure, and validation criteria are already bounded.
